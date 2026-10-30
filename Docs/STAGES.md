@@ -10,6 +10,8 @@
 - Coding agents must follow `AGENTS.md`, especially its documentation-preservation rules.
 - Each stage should end with a playable or verifiably testable result where practical.
 
+$antislop $antislop-code $antislop-human $antislop-ui 
+
 Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, and STAGES.md. ONLY change the checklist and DO NOT DELETE the content. All document in Docs/ is absolute except CHANGE-LOGS.md you can change it based on the development progress.
 
 ---
@@ -18,16 +20,16 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 
 ### S0.1 Inspect the existing project
 - [x] Inspect `project.godot` and current project settings.
-- [ ] Confirm the project opens in Godot 4.7.2 .NET.
-- [ ] Confirm the C# project/solution setup and .NET SDK are available.
+- [x] Confirm the project opens in Godot 4.7.2 .NET.
+- [x] Confirm the C# project/solution setup and .NET SDK are available.
 - [x] Check the Git working tree before making changes.
 - [x] Record the actual current project state; do not assume gameplay files exist.
 
 ### S0.2 Establish a stable baseline
-- [ ] Run the empty project.
-- [ ] Record any warnings or errors.
-- [ ] Confirm the project can be launched from the editor.
-- [ ] Commit or otherwise preserve a clean baseline according to Axel's workflow.
+- [x] Run the empty project.
+- [x] Record any warnings or errors.
+- [x] Confirm the project can be launched from the editor.
+- [x] Commit or otherwise preserve a clean baseline according to Axel's workflow.
 
 **Exit criteria:** The project opens and runs in the intended Godot .NET environment, and its baseline state is understood.
 
