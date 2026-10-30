@@ -1,20 +1,19 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://bobu8n4uvnjma"]
 
-[ext_resource type="Script" path="res://Scripts/TestSwitch.cs" id="1_switch"]
+[ext_resource type="Script" uid="uid://caie7nmvtxpke" path="res://Scripts/TestSwitch.cs" id="1_switch"]
 
 [sub_resource type="RectangleShape2D" id="SwitchRange"]
 size = Vector2(76, 62)
 
-[node name="TestSwitch" type="Area2D"]
+[node name="TestSwitch" type="Area2D" unique_id=274767675]
 collision_layer = 2
 collision_mask = 0
 script = ExtResource("1_switch")
-StableId = "test-switch"
 
-[node name="InteractionShape" type="CollisionShape2D" parent="."]
+[node name="InteractionShape" type="CollisionShape2D" parent="." unique_id=1689193920]
 shape = SubResource("SwitchRange")
 
-[node name="ActiveParticles" type="CPUParticles2D" parent="."]
+[node name="ActiveParticles" type="CPUParticles2D" parent="." unique_id=1492894156]
 emitting = false
 amount = 16
 lifetime = 0.4
@@ -26,4 +25,4 @@ initial_velocity_min = 25.0
 initial_velocity_max = 55.0
 scale_amount_min = 2.0
 scale_amount_max = 3.5
-color = Color(0.0, 0.823529, 1.0, 1)
+color = Color(0, 0.823529, 1, 1)
