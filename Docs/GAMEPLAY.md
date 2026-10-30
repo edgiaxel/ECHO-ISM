@@ -214,6 +214,18 @@ Each module should expose:
 
 Do not build a generic visual scripting framework prematurely. Begin with a small typed configuration or scene-based composition that is easy to inspect in Godot.
 
+### Stage 1 test-room container contract
+
+The initial reusable container is `Scenes/Levels/TestRoom.tscn`, with `LevelContainer.cs` exposing these editor-configurable values:
+- `LevelId` and `DisplayName` identify the room.
+- `RoomBounds` defines its world-space rectangle; `StartingPosition` defines the player spawn point.
+- `LoopDurationSeconds` and `MaximumActiveEchoes` provide per-level defaults.
+- `ObjectiveText` supplies the HUD objective; `CompletionCondition` reserves the level's completion rule. Completion evaluation is not implemented in this skeleton.
+- `PuzzleModules` is the scene placement root. Add reusable module scenes as its children.
+- `ResettableState` and `PersistentState` are separate roots for loop-local and level-persistent nodes. Reset behavior is not implemented in this skeleton.
+
+The game manager instantiates the configured initial level under `LevelHost`. The HUD is a separate scene and reads the displayed room name and objective from the active level container. Scene ownership stays split between loading (`GameManager`), level configuration (`LevelContainer`), room drawing (`RoomGeometry`), and presentation (`BasicHud.tscn`).
+
 ## 8. Level variation and recombination
 
 Start with handcrafted, deterministic templates. Procedural generation comes later.

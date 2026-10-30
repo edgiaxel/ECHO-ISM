@@ -1,3 +1,13 @@
-[gd_scene format=3 uid="uid://cdx5drusgwpj0"]
+[gd_scene load_steps=4 format=3 uid="uid://cdx5drusgwpj0"]
 
-[node name="Main" type="Node2D" unique_id=341402917]
+[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_manager"]
+[ext_resource type="PackedScene" path="res://Scenes/Levels/TestRoom.tscn" id="2_level"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/BasicHud.tscn" id="3_hud"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_manager")
+InitialLevel = ExtResource("2_level")
+
+[node name="LevelHost" type="Node2D" parent="."]
+
+[node name="BasicHud" parent="." instance=ExtResource("3_hud")]

@@ -36,28 +36,28 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 ## Stage 1 — Skeleton application and reusable level container
 
 ### S1.1 Create the application skeleton
-- [ ] Create the main scene.
-- [ ] Create a minimal game manager.
-- [ ] Create the gameplay scene/container.
-- [ ] Create a basic HUD container.
-- [ ] Add placeholder geometry for one room.
-- [ ] Add a simple title/start flow or direct entry into the test room.
-- [ ] Keep scene ownership and script responsibilities clear.
+- [x] Create the main scene.
+- [x] Create a minimal game manager.
+- [x] Create the gameplay scene/container.
+- [x] Create a basic HUD container.
+- [x] Add placeholder geometry for one room.
+- [x] Add a simple title/start flow or direct entry into the test room.
+- [x] Keep scene ownership and script responsibilities clear.
 
 ### S1.2 Define the level container contract
-- [ ] Define how a level declares its bounds or grid.
-- [ ] Define the start position.
-- [ ] Define the loop duration and echo limit.
-- [ ] Define puzzle-module placement.
-- [ ] Define objective and completion conditions.
-- [ ] Define resettable versus persistent state.
-- [ ] Document the contract in `Gameplay.md` without deleting existing content.
+- [x] Define how a level declares its bounds or grid.
+- [x] Define the start position.
+- [x] Define the loop duration and echo limit.
+- [x] Define puzzle-module placement.
+- [x] Define objective and completion conditions.
+- [x] Define resettable versus persistent state.
+- [x] Document the contract in `Gameplay.md` without deleting existing content.
 
 ### S1.3 Validate the skeleton
-- [ ] Run the game from the main scene.
-- [ ] Confirm the room and HUD are visible.
-- [ ] Confirm no missing-resource errors.
-- [ ] Confirm the scene can be edited without changing gameplay scripts unnecessarily.
+- [x] Run the game from the main scene.
+- [x] Confirm the room and HUD are visible.
+- [x] Confirm no missing-resource errors.
+- [x] Confirm the scene can be edited without changing gameplay scripts unnecessarily.
 
 **Exit criteria:** A minimal, runnable skeleton exists, and one level can be assembled from a reusable container.
 

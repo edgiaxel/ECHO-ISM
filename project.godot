@@ -31,5 +31,6 @@ project/assembly_name="ECHO-ISM"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0.129412, 0.145098, 0.196078, 1)
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.129412, 0.145098, 0.196078, 0.96)
+border_color = Color(0.666667, 0.713725, 0.768627, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+
+[node name="BasicHud" type="CanvasLayer"]
+
+[node name="HudRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="InfoPanel" type="PanelContainer" parent="HudRoot"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 520.0
+offset_bottom = 154.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="Info" type="VBoxContainer" parent="HudRoot/InfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="HudRoot/InfoPanel/Info"]
+layout_mode = 2
+text = "ECHO-ISM"
+theme_override_colors/font_color = Color(0.941176, 0.94902, 0.964706, 1)
+theme_override_font_sizes/font_size = 28
+
+[node name="RoomName" type="Label" parent="HudRoot/InfoPanel/Info"]
+layout_mode = 2
+text = "BOOT SEQUENCE | TEST ROOM"
+theme_override_colors/font_color = Color(0.678431, 0.772549, 0.847059, 1)
+theme_override_font_sizes/font_size = 16
+
+[node name="Objective" type="Label" parent="HudRoot/InfoPanel/Info"]
+layout_mode = 2
+text = "Test room container is active."
+theme_override_colors/font_color = Color(0.941176, 0.94902, 0.964706, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="StageNote" type="Label" parent="HudRoot"]
+layout_mode = 0
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+anchor_bottom = 1.0
+offset_top = -58.0
+offset_right = 720.0
+offset_bottom = -24.0
+text = "Prototype shell. Movement and puzzle interactions are not implemented yet."
+theme_override_colors/font_color = Color(0.941176, 0.94902, 0.964706, 1)
+theme_override_font_sizes/font_size = 16
