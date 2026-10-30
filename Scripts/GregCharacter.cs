@@ -22,11 +22,12 @@ public partial class GregCharacter : CharacterBody2D
     private string _currentPrompt = string.Empty;
     private Area2D _interactionArea = null!;
 
-    private static readonly Color GregFill = new("#F2F4F7");
-    private static readonly Color GregOutline = new("#17202C");
-    private static readonly Color EchoFill = new(0.28f, 0.58f, 0.78f, 0.52f);
-    private static readonly Color EchoOutline = new("#9CD8F0");
-    private static readonly Color EyeColor = new("#17202C");
+    private static readonly Color GregFill = new("#00D2FF");
+    private static readonly Color GregOutline = new("#081B33");
+    private static readonly Color EchoFill = new(0.505f, 0.549f, 0.973f, 0.55f);
+    private static readonly Color EchoOutline = new("#38BDF8");
+    private static readonly Color EyeColor = new("#081B33");
+    private static readonly Color EyeSpecular = new("#FFFFFF");
 
     public override void _Ready()
     {
@@ -68,7 +69,7 @@ public partial class GregCharacter : CharacterBody2D
 
         if (IsEcho)
         {
-            DrawArc(center, 17f, 0f, Mathf.Tau, 32, outline, 2f, true);
+            DrawArc(center, 18f, 0f, Mathf.Tau, 32, outline, 1.5f, true);
         }
 
         DrawCircle(center, 13f, outline);
@@ -76,9 +77,15 @@ public partial class GregCharacter : CharacterBody2D
 
         var forward = _facing.Normalized();
         var side = new Vector2(-forward.Y, forward.X);
-        var eyeAnchor = forward * 1.4f;
-        DrawCircle(eyeAnchor + side * 3.3f, 2.1f, EyeColor);
-        DrawCircle(eyeAnchor - side * 3.3f, 2.1f, EyeColor);
+        var eyeAnchor = forward * 1.5f;
+        var leftEye = eyeAnchor + side * 3.4f;
+        var rightEye = eyeAnchor - side * 3.4f;
+
+        DrawCircle(leftEye, 2.3f, EyeColor);
+        DrawCircle(rightEye, 2.3f, EyeColor);
+
+        DrawCircle(leftEye + new Vector2(-0.6f, -0.6f), 0.7f, EyeSpecular);
+        DrawCircle(rightEye + new Vector2(-0.6f, -0.6f), 0.7f, EyeSpecular);
     }
 
     private void UpdateNearbyInteractable()

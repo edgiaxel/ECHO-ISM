@@ -10,24 +10,26 @@ public partial class RoomGeometry : Node2D
     [Export]
     public Vector2 StartingPosition { get; set; } = new(400, 360);
 
-    private static readonly Color RoomColor = new("#262D3B");
-    private static readonly Color EdgeColor = new("#AAB6C4");
-    private static readonly Color SignalColor = new("#478CBF");
-    private static readonly Color StartColor = new("#FFFFFF");
+    private static readonly Color RoomColor = new("#090E1A");
+    private static readonly Color EdgeColor = new("#1E293B");
+    private static readonly Color EdgeInnerColor = new("#334155");
+    private static readonly Color SignalColor = new("#00D2FF");
+    private static readonly Color StartColor = new("#38BDF8");
 
     public override void _Draw()
     {
         DrawRect(RoomBounds, RoomColor);
-        DrawRect(RoomBounds, EdgeColor, false, 6f);
+        DrawRect(RoomBounds, EdgeColor, false, 4f);
+        DrawRect(RoomBounds.Grow(-3f), EdgeInnerColor, false, 1f);
 
         var traceY = RoomBounds.Position.Y + RoomBounds.Size.Y * 0.72f;
-        DrawLine(new Vector2(RoomBounds.Position.X + 72, traceY), new Vector2(RoomBounds.Position.X + 228, traceY), SignalColor, 4f);
-        DrawLine(new Vector2(RoomBounds.End.X - 228, traceY), new Vector2(RoomBounds.End.X - 72, traceY), SignalColor, 4f);
-        DrawCircle(new Vector2(RoomBounds.Position.X + 72, traceY), 8f, SignalColor);
-        DrawCircle(new Vector2(RoomBounds.End.X - 72, traceY), 8f, SignalColor);
+        DrawLine(new Vector2(RoomBounds.Position.X + 72, traceY), new Vector2(RoomBounds.Position.X + 228, traceY), SignalColor, 3f);
+        DrawLine(new Vector2(RoomBounds.End.X - 228, traceY), new Vector2(RoomBounds.End.X - 72, traceY), SignalColor, 3f);
+        DrawCircle(new Vector2(RoomBounds.Position.X + 72, traceY), 6f, SignalColor);
+        DrawCircle(new Vector2(RoomBounds.End.X - 72, traceY), 6f, SignalColor);
 
-        DrawCircle(StartingPosition, 15f, new Color(StartColor, 0.18f));
-        DrawCircle(StartingPosition, 5f, StartColor);
+        DrawCircle(StartingPosition, 16f, new Color(StartColor, 0.15f));
+        DrawCircle(StartingPosition, 4f, StartColor);
     }
 
     public void SetRoomLayout(Rect2 bounds, Vector2 startPosition)

@@ -1,0 +1,25 @@
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "text": "{\"name\":\"projects/12186110244768219801/screens/5a9a3a71c9ee4095a7b17a8838a6a680\",\"title\":\"ECHO-ISM Design System & Art Direction Document\",\"screenshot\":{},\"htmlCode\":{\"name\":\"projects/12186110244768219801/screens/5a9a3a71c9ee4095a7b17a8838a6a680/fileEntries/html\",\"downloadUrl\":\"https://stitch.googleapis.com/v1/projects/12186110244768219801/files/5a9a3a71c9ee4095a7b17a8838a6a680:download\",\"mimeType\":\"text/markdown\"},\"width\":\"0\",\"height\":\"0\",\"deviceType\":\"DESKTOP\"}",
+        "type": "text"
+      }
+    ],
+    "structuredContent": {
+      "deviceType": "DESKTOP",
+      "height": "0",
+      "htmlCode": {
+        "downloadUrl": "https://stitch.googleapis.com/v1/projects/12186110244768219801/files/5a9a3a71c9ee4095a7b17a8838a6a680:download",
+        "mimeType": "text/markdown",
+        "name": "projects/12186110244768219801/screens/5a9a3a71c9ee4095a7b17a8838a6a680/fileEntries/html"
+      },
+      "name": "projects/12186110244768219801/screens/5a9a3a71c9ee4095a7b17a8838a6a680",
+      "screenshot": {},
+      "title": "ECHO-ISM Design System & Art Direction Document",
+      "width": "0"
+    }
+  }
+}

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECHO-ISM // Modular Puzzle Room Layouts & Temporal Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg-dark: #070b14;
+    --surface: #0e1424;
+    --surface-elevated: #161f36;
+    --surface-bright: #1f2a47;
+    --border-subtle: #1e293b;
+    --border-active: #334155;
+    --cyan-core: #00d2ff;
+    --cyan-glow: rgba(0, 210, 255, 0.2);
+    --mint-active: #10b981;
+    --mint-glow: rgba(16, 185, 129, 0.2);
+    --amber-warning: #f59e0b;
+    --amber-glow: rgba(245, 158, 11, 0.2);
+    --purple-echo1: #818cf8;
+    --purple-echo2: #c084fc;
+    --coral-danger: #f43f5e;
+  }
+  body {
+    background-color: var(--bg-dark);
+    color: #e2e8f0;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .blueprint-grid {
+    background-size: 24px 24px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  }
+  .blueprint-grid-dense {
+    background-size: 16px 16px;
+    background-image: 
+      linear-gradient(to right, rgba(0, 210, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 210, 255, 0.06) 1px, transparent 1px);
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #22304d;
+    border-radius: 3px;
+  }
+  .room-view {
+    display: none;
+  }
+  .room-view.active {
+    display: block;
+  }
+</style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-cyan-500/20 selection:text-cyan-300">
+
+  <!-- Top System Header -->
+  <header class="border-b border-slate-800 bg-[#0a0f1d] px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-mono font-bold text-sm shadow-[0_0_12px_rgba(0,210,255,0.25)]">
+          Ω
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold tracking-wider text-slate-100 uppercase">ECHO-ISM // Modular Level Architecture</h1>
+            <span class="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono">GODOT 4.7.2 2D</span>
+          </div>
+          <p class="text-xs text-slate-400 font-mono">Deterministic Time-Loop Puzzle Blueprint Library · 32px Grid Scale · Module Specs M01-M08</p>
+        </div>
+      </div>
+
+      <!-- Navigation Room Selector Pills -->
+      <div class="flex items-center bg-[#070b14] p-1 rounded-lg border border-slate-800 gap-1" id="roomTabs">
+        <button onclick="switchRoom('room-1')" id="tab-room-1" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all text-cyan-400 bg-slate-800/80 border border-cyan-500/40 shadow-sm">
+          ROOM 01: Symmetrical Dual-Wing
+        </button>
+        <button onclick="switchRoom('room-2')" id="tab-room-2" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all text-slate-400 hover:text-slate-200">
+          ROOM 02: Serpentine Temporal Slider
+        </button>
+        <button onclick="switchRoom('room-3')" id="tab-room-3" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all text-slate-400 hover:text-slate-200">
+          ROOM 03: Truth Relay & Sync Gate
+        </button>
+        <button onclick="switchRoom('room-4')" id="tab-room-4" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all text-slate-400 hover:text-slate-200">
+          ROOM 04: Triple Echo Gauntlet
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="toggleLoopPlay()" id="playTimelineBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-medium transition-colors">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>SIMULATE REPLAY [SPACE]</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
+
+    <!-- Interactive Room Layout Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Left: Blueprint Canvas (8 Columns) -->
+      <div class="lg:col-span-8 bg-[#0b101e] rounded-xl border border-slate-800 overflow-hidden shadow-2xl relative">
+        
+        <!-- Canvas Status Banner -->
+        <div class="bg-[#0e1629] px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <span id="roomTitleDisplay" class="font-mono text-xs font-semibold uppercase tracking-wider text-slate-200">
+              TEMPORAL BLUEPRINT // RM-01: THE DUAL PROTOCOL CHAMBER
+            </span>
+          </div>
+          <div class="flex items-center gap-3 font-mono text-xs text-slate-400">
+            <span>GRID: <strong class="text-cyan-400">22×14 TILES</strong></span>
+            <span>CHRONO: <strong class="text-amber-400">15.00s</strong></span>
+            <span>ECHO POOL: <strong class="text-indigo-400">MAX 2</strong></span>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Diagram Area -->
+        <div class="relative w-full aspect-[16/10] blueprint-grid-dense flex items-center justify-center p-4 overflow-hidden bg-[#070b14]" id="canvasContainer">
+          
+          <!-- ROOM 1 SVG: Symmetrical Dual-Wing -->
+          <div id="room-1" class="room-view active w-full h-full">
+            <svg viewBox="0 0 880 540" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="wallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#141c2e" />
+                  <stop offset="100%" stop-color="#0b101c" />
+                </linearGradient>
+                <linearGradient id="corridorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#0d1424" />
+                  <stop offset="100%" stop-color="#080d1a" />
+                </linearGradient>
+                <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+                <filter id="echoGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+                <marker id="arrowLive" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00d2ff"/>
+                </marker>
+                <marker id="arrowEcho1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#818cf8"/>
+                </marker>
+              </defs>
+
+              <!-- Outer Boundary & Walls -->
+              <rect x="40" y="40" width="800" height="460" rx="14" fill="none" stroke="#22304d" stroke-width="6"/>
+              
+              <!-- Room Floor Regions -->
+              <rect x="46" y="46" width="788" height="448" fill="url(#corridorGrad)" rx="10"/>
+
+              <!-- Central Wall Divider (Splits West and East Wings) -->
+              <rect x="420" y="46" width="40" height="300" fill="url(#wallGrad)" stroke="#22304d" stroke-width="2"/>
+              <text x="440" y="190" fill="#475569" font-size="10" font-family="'JetBrains Mono'" text-anchor="middle" transform="rotate(-90 440 190)">SECURITY DIVIDER</text>
+
+              <!-- Bulkhead Door M02 (Exit Door at Center Top) -->
+              <g transform="translate(415, 346)">
+                <!-- Door Frame -->
+                <rect x="0" y="0" width="50" height="18" fill="#1e293b" stroke="#334155" stroke-width="2" rx="3"/>
+                <!-- Energy Barrier (Dual mechanism) -->
+                <rect x="5" y="4" width="40" height="10" fill="#10b981" fill-opacity="0.3" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,2"/>
+                <!-- Lock Nodes -->
+                <circle cx="15" cy="9" r="3" fill="#10b981"/>
+                <circle cx="35" cy="9" r="3" fill="#10b981"/>
+                <text x="25" y="32" fill="#10b981" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">M02 BULKHEAD (DUAL-LOCK)</text>
+              </g>
+
+              <!-- Level Exit Terminal Gateway (Top Center) -->
+              <g transform="translate(405, 52)">
+                <rect x="0" y="0" width="70" height="28" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1.5"/>
+                <text x="35" y="18" fill="#34d399" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">EXIT NODE</text>
+              </g>
+
+              <!-- WEST WING: Pressure Switch M01-A -->
+              <g transform="translate(140, 160)">
+                <circle cx="40" cy="40" r="34" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+                <circle cx="40" cy="40" r="24" fill="#818cf8" fill-opacity="0.2" stroke="#818cf8" stroke-width="2" filter="url(#echoGlow)"/>
+                <circle cx="40" cy="40" r="10" fill="#818cf8"/>
+                <text x="40" y="90" fill="#c4b5fd" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">M01-A SWITCH [HELD BY ECHO I]</text>
+                <text x="40" y="103" fill="#64748b" font-size="9" font-family="'JetBrains Mono'" text-anchor="middle">At T=04.2s — T=14.5s</text>
+              </g>
+
+              <!-- EAST WING: Pressure Switch M01-B -->
+              <g transform="translate(660, 160)">
+                <circle cx="40" cy="40" r="34" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+                <circle cx="40" cy="40" r="24" fill="#00d2ff" fill-opacity="0.2" stroke="#00d2ff" stroke-width="2" filter="url(#cyanGlow)"/>
+                <circle cx="40" cy="40" r="10" fill="#00d2ff"/>
+                <text x="40" y="90" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">M01-B SWITCH [HELD BY LIVE GREG]</text>
+                <text x="40" y="103" fill="#64748b" font-size="9" font-family="'JetBrains Mono'" text-anchor="middle">At T=06.5s — Synchronized</text>
+              </g>
+
+              <!-- Circuit Trace Cables Connecting Switches to M02 Door -->
+              <path d="M 180 160 L 180 100 L 415 100" fill="none" stroke="#818cf8" stroke-width="2" stroke-dasharray="6,4"/>
+              <path d="M 700 160 L 700 100 L 465 100" fill="none" stroke="#00d2ff" stroke-width="2" stroke-dasharray="6,4"/>
+              
+              <!-- Starting Spawn Pad (South Center) -->
+              <g transform="translate(400, 420)">
+                <rect x="0" y="0" width="80" height="50" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4"/>
+                <circle cx="40" cy="25" r="12" fill="#0369a1" fill-opacity="0.4"/>
+                <text x="40" y="29" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">SPAWN [S]</text>
+                <text x="40" y="66" fill="#94a3b8" font-size="9" font-family="'Space Grotesk'" text-anchor="middle">Origin (00.0s)</text>
+              </g>
+
+              <!-- Echo I Recorded Trajectory (Purple Path) -->
+              <path d="M 420 420 C 320 420, 240 360, 200 280 C 180 240, 180 220, 180 200" 
+                    fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="8,4" marker-end="url(#arrowEcho1)"/>
+              <g transform="translate(240, 360)">
+                <rect x="0" y="0" width="110" height="20" rx="4" fill="#1e1b4b" stroke="#818cf8" stroke-width="1"/>
+                <text x="55" y="14" fill="#c4b5fd" font-size="9" font-family="'JetBrains Mono'" font-weight="600" text-anchor="middle">LOOP 1: Echo I Route</text>
+              </g>
+
+              <!-- Live Greg Trajectory (Cyan Path to East Switch, then Exit) -->
+              <path d="M 460 420 C 560 420, 640 360, 680 280 C 700 240, 700 220, 700 200" 
+                    fill="none" stroke="#00d2ff" stroke-width="3" marker-end="url(#arrowLive)"/>
+              <g transform="translate(530, 360)">
+                <rect x="0" y="0" width="120" height="20" rx="4" fill="#082f49" stroke="#00d2ff" stroke-width="1"/>
+                <text x="60" y="14" fill="#38bdf8" font-size="9" font-family="'JetBrains Mono'" font-weight="600" text-anchor="middle">LOOP 2: Live Route</text>
+              </g>
+
+              <!-- Ghost Echo Avatar (On West Plate) -->
+              <g transform="translate(166, 140)">
+                <path d="M 14 0 C 26 0, 30 14, 29 27 C 28 36, 22 40, 14 40 C 6 40, 2 36, 1 27 C 0 14, 3 0, 14 0 Z" 
+                      fill="#818cf8" fill-opacity="0.5" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="4,2"/>
+                <circle cx="10" cy="16" r="2" fill="#1e1b4b"/>
+                <circle cx="18" cy="16" r="2" fill="#1e1b4b"/>
+                <!-- Loop Roman Numeral Badge -->
+                <rect x="8" y="-12" width="12" height="10" rx="2" fill="#312e81" stroke="#818cf8" stroke-width="1"/>
+                <text x="14" y="-4" fill="#c4b5fd" font-size="7" font-weight="700" text-anchor="middle">I</text>
+              </g>
+
+              <!-- Live Greg Avatar (At East Plate) -->
+              <g transform="translate(686, 140)">
+                <path d="M 14 0 C 26 0, 30 14, 29 27 C 28 36, 22 40, 14 40 C 6 40, 2 36, 1 27 C 0 14, 3 0, 14 0 Z" 
+                      fill="#00d2ff" stroke="#081b33" stroke-width="2.5" filter="url(#cyanGlow)"/>
+                <circle cx="10" cy="16" r="2.2" fill="#081b33"/>
+                <circle cx="18" cy="16" r="2.2" fill="#081b33"/>
+                <circle cx="11" cy="15" r="0.8" fill="#ffffff"/>
+                <circle cx="19" cy="15" r="0.8" fill="#ffffff"/>
+              </g>
+            </svg>
+          </div>
+
+          <!-- ROOM 2 SVG: Serpentine Temporal Slider -->
+          <div id="room-2" class="room-view w-full h-full">
+            <svg viewBox="0 0 880 540" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Boundaries -->
+              <rect x="40" y="40" width="800" height="460" rx="14" fill="#0b101e" stroke="#22304d" stroke-width="6"/>
+
+              <!-- Serpentine Interior Baffles -->
+              <rect x="40" y="160" width="600" height="24" fill="#161f36" stroke="#22304d" stroke-width="2"/>
+              <rect x="240" y="290" width="600" height="24" fill="#161f36" stroke="#22304d" stroke-width="2"/>
+              <rect x="40" y="410" width="600" height="24" fill="#161f36" stroke="#22304d" stroke-width="2"/>
+
+              <!-- Timing Gates (M03) along the corridor -->
+              <!-- Gate 1 (Top Corridor) -->
+              <g transform="translate(560, 160)">
+                <rect x="0" y="0" width="40" height="24" fill="#78350f" stroke="#f59e0b" stroke-width="2"/>
+                <text x="20" y="16" fill="#fbbf24" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">GATE 1</text>
+                <text x="20" y="38" fill="#f59e0b" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">Opens: 04.5s</text>
+              </g>
+
+              <!-- Gate 2 (Mid Corridor) -->
+              <g transform="translate(320, 290)">
+                <rect x="0" y="0" width="40" height="24" fill="#78350f" stroke="#f59e0b" stroke-width="2"/>
+                <text x="20" y="16" fill="#fbbf24" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">GATE 2</text>
+                <text x="20" y="38" fill="#f59e0b" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">Opens: 09.0s</text>
+              </g>
+
+              <!-- Module M04: Timing Slider Console (At South-West Alcove) -->
+              <g transform="translate(80, 440)">
+                <rect x="0" y="0" width="220" height="50" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                <text x="110" y="18" fill="#38bdf8" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">M04 TIMING SLIDER CONSOLE</text>
+                <!-- Slider Track -->
+                <rect x="15" y="26" width="190" height="10" rx="5" fill="#1e293b"/>
+                <!-- Sweet Spots -->
+                <rect x="55" y="26" width="30" height="10" fill="#10b981" rx="2"/>
+                <rect x="135" y="26" width="30" height="10" fill="#10b981" rx="2"/>
+                <!-- Oscillating Needle Pin -->
+                <polygon points="70,22 66,36 74,36" fill="#f8fafc"/>
+                <text x="110" y="48" fill="#94a3b8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">[E] Stop Needle in Green Zone</text>
+              </g>
+
+              <!-- Spawn Pad -->
+              <g transform="translate(60, 60)">
+                <rect x="0" y="0" width="70" height="40" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="35" y="24" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">START [S]</text>
+              </g>
+
+              <!-- Exit Gate -->
+              <g transform="translate(740, 440)">
+                <rect x="0" y="0" width="80" height="40" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="2"/>
+                <text x="40" y="24" fill="#34d399" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">EXIT NODE</text>
+              </g>
+
+              <!-- Echo I Route (Runs down to Console and operates Slider) -->
+              <path d="M 95 100 L 95 380 L 150 440" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrowEcho1)"/>
+              
+              <!-- Live Greg Route (Runs through Gates as Echo opens them) -->
+              <path d="M 130 80 L 760 80 L 760 220 L 180 220 L 180 350 L 760 350 L 760 440" fill="none" stroke="#00d2ff" stroke-width="3" marker-end="url(#arrowLive)"/>
+
+              <!-- Telemetry annotations -->
+              <g transform="translate(480, 20)">
+                <rect x="0" y="0" width="340" height="40" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                <text x="15" y="18" fill="#f8fafc" font-size="10" font-family="'Space Grotesk'" font-weight="600">SOLUTION LOGIC: TIMING WINDOW TRAVERSAL</text>
+                <text x="15" y="32" fill="#94a3b8" font-size="9" font-family="'JetBrains Mono'">Echo 1 stops slider at 04.5s &amp; 09.0s while Live Greg sprints.</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- ROOM 3 SVG: Truth Relay & Sync Gate -->
+          <div id="room-3" class="room-view w-full h-full">
+            <svg viewBox="0 0 880 540" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Outer frame -->
+              <rect x="40" y="40" width="800" height="460" rx="14" fill="#0b101e" stroke="#22304d" stroke-width="6"/>
+
+              <!-- Central Corrupted Zone (Impassable until verified) -->
+              <g transform="translate(340, 160)">
+                <rect x="0" y="0" width="200" height="220" rx="8" fill="#450a0a" fill-opacity="0.3" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,4"/>
+                <text x="100" y="105" fill="#f87171" font-size="11" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">CORRUPTED DATA NODE</text>
+                <text x="100" y="125" fill="#fca5a5" font-size="9" font-family="'JetBrains Mono'" text-anchor="middle">Blocks Passage (Hazard)</text>
+              </g>
+
+              <!-- North Verification Terminal (M06) -->
+              <g transform="translate(360, 55)">
+                <rect x="0" y="0" width="160" height="50" rx="6" fill="#0f172a" stroke="#00d2ff" stroke-width="2"/>
+                <circle cx="25" cy="25" r="8" fill="#0284c7"/>
+                <text x="90" y="22" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">M06 VERIFY TERMINAL</text>
+                <text x="90" y="38" fill="#10b981" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">[E] Purge Corruption</text>
+              </g>
+
+              <!-- Synchronization Gate (M05) Pylons (South) -->
+              <g transform="translate(260, 420)">
+                <circle cx="20" cy="20" r="16" fill="#0f172a" stroke="#818cf8" stroke-width="2"/>
+                <text x="20" y="24" fill="#c4b5fd" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">PYLON A</text>
+              </g>
+              <g transform="translate(600, 420)">
+                <circle cx="20" cy="20" r="16" fill="#0f172a" stroke="#00d2ff" stroke-width="2"/>
+                <text x="20" y="24" fill="#38bdf8" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">PYLON B</text>
+              </g>
+              <path d="M 296 440 L 600 440" stroke="#10b981" stroke-width="2" stroke-dasharray="4,4"/>
+              <text x="450" y="435" fill="#34d399" font-size="9" font-family="'JetBrains Mono'" text-anchor="middle">M05 SYNC GATE: ±0.35s Window</text>
+
+              <!-- Spawn & Exit -->
+              <g transform="translate(80, 240)">
+                <rect x="0" y="0" width="80" height="40" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="40" y="24" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">START [S]</text>
+              </g>
+
+              <g transform="translate(720, 240)">
+                <rect x="0" y="0" width="80" height="40" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="2"/>
+                <text x="40" y="24" fill="#34d399" font-size="10" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">EXIT NODE</text>
+              </g>
+
+              <!-- Echo I: Runs to Terminal M06, inputs verification at 05.0s -->
+              <path d="M 160 250 C 220 200, 280 80, 360 80" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrowEcho1)"/>
+              
+              <!-- Echo II (Purple 2): Runs to Pylon A at 10.0s -->
+              <path d="M 160 270 C 180 360, 200 440, 260 440" fill="none" stroke="#c084fc" stroke-width="3" stroke-dasharray="6,4"/>
+
+              <!-- Live Greg: Charges Pylon B at 10.0s, then enters cleared node to Exit -->
+              <path d="M 160 260 C 240 320, 480 440, 600 440" fill="none" stroke="#00d2ff" stroke-width="3" marker-end="url(#arrowLive)"/>
+              <path d="M 620 420 C 660 360, 680 300, 720 260" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-dasharray="4,2"/>
+            </svg>
+          </div>
+
+          <!-- ROOM 4 SVG: Triple Echo Gauntlet -->
+          <div id="room-4" class="room-view w-full h-full">
+            <svg viewBox="0 0 880 540" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="40" y="40" width="800" height="460" rx="14" fill="#0b101e" stroke="#22304d" stroke-width="6"/>
+
+              <!-- 3 Segmented Chambers requiring 3 simultaneous Echo holds -->
+              <rect x="280" y="40" width="20" height="340" fill="#161f36" stroke="#22304d" stroke-width="1.5"/>
+              <rect x="560" y="160" width="20" height="340" fill="#161f36" stroke="#22304d" stroke-width="1.5"/>
+
+              <!-- Station 1 (Chamber A - Switch) -->
+              <circle cx="160" cy="140" r="26" fill="#0f172a" stroke="#818cf8" stroke-width="2"/>
+              <text x="160" y="144" fill="#c4b5fd" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">HOLD S1</text>
+              <text x="160" y="180" fill="#94a3b8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">Echo I (Hold 03s-14s)</text>
+
+              <!-- Station 2 (Chamber B - Verification Terminal) -->
+              <rect x="380" y="380" width="80" height="36" rx="4" fill="#0f172a" stroke="#c084fc" stroke-width="2"/>
+              <text x="420" y="402" fill="#e9d5ff" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">TERMINAL</text>
+              <text x="420" y="430" fill="#94a3b8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">Echo II (Hack at 07s)</text>
+
+              <!-- Station 3 (Chamber C - Moving Obstacle Jammer) -->
+              <circle cx="420" cy="140" r="26" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+              <text x="420" y="144" fill="#38bdf8" font-size="9" font-family="'JetBrains Mono'" font-weight="700" text-anchor="middle">RELAY S3</text>
+              <text x="420" y="180" fill="#94a3b8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">Echo III (Hold 10s-14s)</text>
+
+              <!-- Final Tri-Lock Gate -->
+              <g transform="translate(680, 240)">
+                <rect x="0" y="0" width="30" height="90" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="2"/>
+                <circle cx="15" cy="20" r="4" fill="#818cf8"/>
+                <circle cx="15" cy="45" r="4" fill="#c084fc"/>
+                <circle cx="15" cy="70" r="4" fill="#38bdf8"/>
+                <text x="50" y="48" fill="#34d399" font-size="9" font-family="'JetBrains Mono'" font-weight="700">TRI-LOCK EXIT</text>
+              </g>
+
+              <!-- Live Greg (Loop 4) traversing straight through the opened route -->
+              <path d="M 80 440 L 760 440 L 760 280" fill="none" stroke="#00d2ff" stroke-width="3.5" marker-end="url(#arrowLive)"/>
+              <text x="600" y="425" fill="#00d2ff" font-size="9" font-family="'JetBrains Mono'" font-weight="700">LIVE GREG (LOOP 4): UNINTERRUPTED SPRINT</text>
+            </svg>
+          </div>
+
+          <!-- Interactive Trajectory Legend Overlay (Bottom Left) -->
+          <div class="absolute bottom-3 left-3 bg-[#0a0f1d]/90 backdrop-blur-md p-3 rounded-lg border border-slate-800 text-[11px] font-mono space-y-1.5 shadow-lg">
+            <div class="text-[10px] text-slate-400 font-bold tracking-wider uppercase mb-1">RECORDED TIMELINE PATHS</div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-1 bg-[#818cf8] rounded-full inline-block"></span>
+              <span class="text-indigo-300">LOOP 1: Ghost Echo I (Past Attempt)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-1 bg-[#c084fc] rounded-full inline-block"></span>
+              <span class="text-purple-300">LOOP 2: Ghost Echo II (Intermediate Loop)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-1 bg-[#00d2ff] rounded-full inline-block"></span>
+              <span class="text-cyan-300 font-bold">LIVE GREG: Current Loop Recording</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Timeline Chrono Scrubber Bar below Canvas -->
+        <div class="bg-[#0b101c] p-4 border-t border-slate-800 space-y-3 font-mono">
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400">CHRONO POSITION:</span>
+              <span id="chronoDisplay" class="text-cyan-400 font-bold">06.50s / 15.00s</span>
+            </div>
+            <div class="flex items-center gap-4 text-slate-400">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> DETERMINISTIC C# SYNC</span>
+              <span>FIXED DELTA: 60 FPS</span>
+            </div>
+          </div>
+
+          <!-- Multi-Track Temporal Bar -->
+          <div class="space-y-1.5 text-[11px]">
+            <!-- Echo 1 Track -->
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-indigo-400 font-semibold">ECHO I [01]</span>
+              <div class="flex-1 h-3.5 bg-slate-900 rounded relative overflow-hidden border border-slate-800">
+                <div class="absolute left-[28%] w-[68%] h-full bg-indigo-500/30 border-l border-r border-indigo-400 flex items-center px-1 text-[9px] text-indigo-200">
+                  HOLDING SWITCH M01-A (T=04.2s - 14.5s)
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Track -->
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-cyan-400 font-semibold">LIVE GREG</span>
+              <div class="flex-1 h-3.5 bg-slate-900 rounded relative overflow-hidden border border-slate-800">
+                <div class="absolute left-0 w-[43%] h-full bg-cyan-500/30 border-r border-cyan-400 flex items-center px-1 text-[9px] text-cyan-200" id="liveTimelineProgress">
+                  SPRINTING TO SWITCH M01-B [COORDINATION TIME: 06.5s]
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Detailed Puzzle Architecture & State Breakdown (4 Columns) -->
+      <div class="lg:col-span-4 space-y-4">
+        
+        <!-- Puzzle Identity Card -->
+        <div class="bg-[#0b101e] rounded-xl border border-slate-800 p-5 space-y-4 shadow-xl">
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <div>
+              <span class="text-[10px] font-mono tracking-widest text-cyan-400 uppercase font-semibold">PUZZLE TEMPLATE SPEC</span>
+              <h2 id="roomSidebarTitle" class="text-lg font-bold text-slate-100">The Dual Protocol Chamber</h2>
+            </div>
+            <span id="roomDifficultyBadge" class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono font-medium">
+              TIER 2 // MODERATE
+            </span>
+          </div>
+
+          <!-- Problem & Solution Narrative -->
+          <div class="space-y-2 text-xs leading-relaxed text-slate-300">
+            <h3 class="font-mono text-slate-400 uppercase font-bold tracking-wider">MECHANICAL CHALLENGE:</h3>
+            <p id="roomChallengeText" class="text-slate-300">
+              The exit bulkhead door (M02) requires simultaneous electrical contact across both the Western and Eastern wings. A single Greg cannot cross the central divider and occupy both pressure switch discs within the temporal tolerance window.
+            </p>
+          </div>
+
+          <!-- Multi-Loop Strategy Steps -->
+          <div class="space-y-2 pt-2 border-t border-slate-800/80 text-xs">
+            <h3 class="font-mono text-slate-400 uppercase font-bold tracking-wider">STEP-BY-STEP MULTI-LOOP SOLUTION:</h3>
+            <ol id="roomSolutionSteps" class="space-y-2 text-slate-300 font-mono pl-4 list-decimal marker:text-cyan-400 text-[11px]">
+              <li><strong>Loop 1 (Echo I):</strong> Spawn and sprint to West Wing switch M01-A. Step onto the disc at T=04.2s and hold until loop reset (T=14.5s).</li>
+              <li><strong>Loop 2 (Live Greg):</strong> Spawn and sprint immediately to East Wing switch M01-B, stepping onto it at T=06.5s.</li>
+              <li><strong>Resolution:</strong> At T=06.5s, both switches are simultaneously held. Bulkhead M02 dissolves for 8.0s, enabling Live Greg to sprint through to the Exit Node.</li>
+            </ol>
+          </div>
+
+          <!-- Module Configuration Matrix -->
+          <div class="space-y-2 pt-2 border-t border-slate-800/80">
+            <h3 class="font-mono text-slate-400 text-[10px] uppercase font-bold tracking-wider">ENGAGED PUZZLE MODULES</h3>
+            <div id="moduleChips" class="flex flex-wrap gap-1.5 font-mono text-[10px]">
+              <span class="px-2 py-1 bg-slate-800/80 rounded text-cyan-300 border border-cyan-500/20">M01: Pressure Plate (x2)</span>
+              <span class="px-2 py-1 bg-slate-800/80 rounded text-emerald-300 border border-emerald-500/20">M02: Dual Bulkhead Door</span>
+              <span class="px-2 py-1 bg-slate-800/80 rounded text-indigo-300 border border-indigo-500/20">C# ResetPolicy: LoopRewind</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reusable Level Container Contract (Godot C# Verification) -->
+        <div class="bg-[#0b101e] rounded-xl border border-slate-800 p-5 space-y-3 font-mono text-xs">
+          <div class="flex items-center justify-between text-slate-400 text-[11px]">
+            <span class="font-bold text-slate-300">GODOT LEVEL CONTAINER CONTRACT</span>
+            <span class="text-cyan-400">LevelContainer.cs</span>
+          </div>
+
+          <div class="bg-[#070b14] p-3 rounded-lg border border-slate-800/80 text-[11px] text-slate-300 space-y-1.5">
+            <div class="flex justify-between">
+              <span class="text-slate-500">LoopDurationSeconds:</span>
+              <span class="text-amber-400">15.0f</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">MaximumActiveEchoes:</span>
+              <span class="text-indigo-400">2</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">EchoCollisionProfile:</span>
+              <span class="text-emerald-400">GhostNonBlocking</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">DeterministicSeed:</span>
+              <span class="text-slate-400">0x7F2A_ECHO</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Comparative Modular Room Structure Variation Table -->
+    <section class="bg-[#0b101e] rounded-xl border border-slate-800 p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-100 uppercase tracking-wider font-mono">MODULAR RECOMBINATION MATRIX // 1 BASE ROOM → 4 GAMEPLAY ARTIFACTS</h3>
+          <p class="text-xs text-slate-400">Demonstrating how the same 22×14 Godot room container produces completely distinct temporal challenges via modular mechanics.</p>
+        </div>
+        <span class="text-xs px-3 py-1 bg-cyan-950 text-cyan-400 border border-cyan-500/30 rounded font-mono">
+          4 REUSABLE TEMPLATES LOADED
+        </span>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left font-mono text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 bg-[#0e1629] text-slate-400">
+              <th class="p-3">ROOM VARIANT</th>
+              <th class="p-3">PRIMARY MODULES</th>
+              <th class="p-3">REQUIRED ECHOES</th>
+              <th class="p-3">TEMPORAL MECHANIC</th>
+              <th class="p-3">NARRATIVE RESILIENCE THEME</th>
+              <th class="p-3">SOLVABILITY CHECK</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-300">
+            <tr class="hover:bg-slate-800/30 transition-colors">
+              <td class="p-3 font-bold text-cyan-400">01. Dual Protocol Chamber</td>
+              <td class="p-3">M01 (Plate x2), M02 (Bulkhead)</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">1 Echo</span></td>
+              <td class="p-3 text-slate-300">Simultaneous spatial hold (East/West)</td>
+              <td class="p-3 text-slate-400">Cooperation across divided social channels</td>
+              <td class="p-3 text-emerald-400 font-bold">PASS (100% Deterministic)</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition-colors">
+              <td class="p-3 font-bold text-amber-400">02. Serpentine Timing Slider</td>
+              <td class="p-3">M04 (Slider), M03 (Timed Doors)</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">1 Echo</span></td>
+              <td class="p-3 text-slate-300">Precise window alignment (04.5s / 09.0s)</td>
+              <td class="p-3 text-slate-400">Timing calibration under rapid escalation</td>
+              <td class="p-3 text-emerald-400 font-bold">PASS (±0.4s Generous Window)</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition-colors">
+              <td class="p-3 font-bold text-purple-400">03. Truth Relay &amp; Sync Gate</td>
+              <td class="p-3">M05 (Sync), M06 (Verification)</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">2 Echoes</span></td>
+              <td class="p-3 text-slate-300">State transformation + synchronized ping</td>
+              <td class="p-3 text-slate-400">Purging corrupted news before node transmission</td>
+              <td class="p-3 text-emerald-400 font-bold">PASS (Solvable in 3 Loops)</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition-colors">
+              <td class="p-3 font-bold text-emerald-400">04. Triple Echo Gauntlet</td>
+              <td class="p-3">M01, M06, M07, M08 (Moving)</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-300">3 Echoes</span></td>
+              <td class="p-3 text-slate-300">Chamber-by-chamber relay baton pass</td>
+              <td class="p-3 text-slate-400">Total city system recovery cascade</td>
+              <td class="p-3 text-emerald-400 font-bold">PASS (Mastery Capstone)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const roomData = {
+      'room-1': {
+        title: 'TEMPORAL BLUEPRINT // RM-01: THE DUAL PROTOCOL CHAMBER',
+        sidebarTitle: 'The Dual Protocol Chamber',
+        difficulty: 'TIER 2 // MODERATE',
+        challenge: 'The exit bulkhead door (M02) requires simultaneous electrical contact across both the Western and Eastern wings. A single Greg cannot cross the central divider and occupy both pressure switch discs within the temporal tolerance window.',
+        steps: [
+          '<strong>Loop 1 (Echo I):</strong> Spawn and sprint to West Wing switch M01-A. Step onto the disc at T=04.2s and hold until loop reset (T=14.5s).',
+          '<strong>Loop 2 (Live Greg):</strong> Spawn and sprint immediately to East Wing switch M01-B, stepping onto it at T=06.5s.',
+          '<strong>Resolution:</strong> At T=06.5s, both switches are simultaneously held. Bulkhead M02 dissolves for 8.0s, enabling Live Greg to sprint through to the Exit Node.'
+        ],
+        modules: [
+          'M01: Pressure Plate (x2)',
+          'M02: Dual Bulkhead Door',
+          'C# ResetPolicy: LoopRewind'
+        ]
+      },
+      'room-2': {
+        title: 'TEMPORAL BLUEPRINT // RM-02: SERPENTINE TEMPORAL SLIDER',
+        sidebarTitle: 'Serpentine Timing Slider',
+        difficulty: 'TIER 3 // PRECISION TIMING',
+        challenge: 'A long serpentine corridor blocked by two timed shutter doors (M03). The control console (M04) sits far to the southwest. Walking the entire corridor takes 12 seconds, leaving no time for a single Greg to operate both the console and sprint through the gates.',
+        steps: [
+          '<strong>Loop 1 (Echo I):</strong> Run south directly to the M04 Timing Slider Console. Stop the oscillating needle inside Green Zone 1 at exactly T=04.5s (opening Gate 1), and Green Zone 2 at T=09.0s (opening Gate 2).',
+          '<strong>Loop 2 (Live Greg):</strong> Ignore the console and sprint down the main corridor. As you reach Gate 1 at 04.6s and Gate 2 at 09.1s, Echo I opens them ahead of you, clearing the path straight to the Exit.'
+        ],
+        modules: [
+          'M03: Timed Shutter Door (x2)',
+          'M04: Timing Slider Console',
+          'Tolerance: ±0.40s Sweet Spot'
+        ]
+      },
+      'room-3': {
+        title: 'TEMPORAL BLUEPRINT // RM-03: TRUTH RELAY & SYNC GATE',
+        sidebarTitle: 'Truth Relay & Synchronization Room',
+        difficulty: 'TIER 4 // SYSTEM INTEGRATION',
+        challenge: 'A corrupted misinformation data hazard blocks the central transit bridge. In addition, the southern exit gate requires two simultaneous signal transmissions (M05) within a strict ±0.35s tolerance window.',
+        steps: [
+          '<strong>Loop 1 (Echo I):</strong> Travel north to M06 Verification Terminal. Input verification sequence at T=05.0s, permanently converting the corrupted red hazard into a calm passable bridge.',
+          '<strong>Loop 2 (Echo II):</strong> Run south to Pylon A and interact at exactly T=10.0s.',
+          '<strong>Loop 3 (Live Greg):</strong> Run to Pylon B, interacting at T=10.0s (syncing with Echo II). With the Sync Gate unlocked and the hazard purged by Echo I, walk straight through to the exit.'
+        ],
+        modules: [
+          'M05: Synchronization Pylons',
+          'M06: Verification Terminal',
+          'Hazard: Misinformation Hazard Zone'
+        ]
+      },
+      'room-4': {
+        title: 'TEMPORAL BLUEPRINT // RM-04: TRIPLE ECHO GAUNTLET',
+        sidebarTitle: 'Triple Echo Capstone Gauntlet',
+        difficulty: 'TIER 5 // ADVANCED COORDINATION',
+        challenge: 'A 3-chamber relay where the final exit is shielded by a Tri-Lock security bulkhead requiring simultaneous sustained signal hold, terminal verification, and moving platform alignment.',
+        steps: [
+          '<strong>Loop 1 (Echo I):</strong> Navigate Chamber 1, hold Switch 1 from 03.0s to 14.5s.',
+          '<strong>Loop 2 (Echo II):</strong> Cross into Chamber 2 via Echo I’s door, verify Terminal 2 at 07.2s.',
+          '<strong>Loop 3 (Echo III):</strong> Cross into Chamber 3, hold Relay Switch 3 from 10.0s to 14.5s.',
+          '<strong>Loop 4 (Live Greg):</strong> All three barriers dissolve in sequence. Live Greg makes a clean, uninterrupted 11-second sprint through the complete course.'
+        ],
+        modules: [
+          'M01: Pressure Plate',
+          'M06: Verification Console',
+          'M08: Moving Platform Barrier',
+          'Tri-Lock Master Exit Gate'
+        ]
+      }
+    };
+
+    function switchRoom(roomId) {
+      // Hide all rooms
+      document.querySelectorAll('.room-view').forEach(el => el.classList.remove('active'));
+      // Show selected room
+      document.getElementById(roomId).classList.add('active');
+
+      // Update Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-cyan-400', 'bg-slate-800/80', 'border', 'border-cyan-500/40', 'shadow-sm');
+        btn.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById('tab-' + roomId);
+      activeBtn.classList.remove('text-slate-400');
+      activeBtn.classList.add('text-cyan-400', 'bg-slate-800/80', 'border', 'border-cyan-500/40', 'shadow-sm');
+
+      // Update Metadata
+      const data = roomData[roomId];
+      document.getElementById('roomTitleDisplay').innerText = data.title;
+      document.getElementById('roomSidebarTitle').innerText = data.sidebarTitle;
+      document.getElementById('roomDifficultyBadge').innerText = data.difficulty;
+      document.getElementById('roomChallengeText').innerHTML = data.challenge;
+
+      // Update Steps
+      const stepsContainer = document.getElementById('roomSolutionSteps');
+      stepsContainer.innerHTML = '';
+      data.steps.forEach(step => {
+        const li = document.createElement('li');
+        li.innerHTML = step;
+        stepsContainer.appendChild(li);
+      });
+
+      // Update Module Chips
+      const moduleContainer = document.getElementById('moduleChips');
+      moduleContainer.innerHTML = '';
+      data.modules.forEach(mod => {
+        const span = document.createElement('span');
+        span.className = 'px-2 py-1 bg-slate-800/80 rounded text-cyan-300 border border-cyan-500/20';
+        span.innerText = mod;
+        moduleContainer.appendChild(span);
+      });
+    }
+
+    let isPlaying = false;
+    let timerInterval = null;
+    let currentChrono = 6.5;
+
+    function toggleLoopPlay() {
+      const btn = document.getElementById('playTimelineBtn');
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        btn.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span><span>PAUSE SIMULATION</span>';
+        timerInterval = setInterval(() => {
+          currentChrono += 0.1;
+          if (currentChrono > 15.0) currentChrono = 0.0;
+          document.getElementById('chronoDisplay').innerText = currentChrono.toFixed(2) + 's / 15.00s';
+          const progressPercent = (currentChrono / 15.0) * 100;
+          document.getElementById('liveTimelineProgress').style.width = progressPercent + '%';
+        }, 100);
+      } else {
+        clearInterval(timerInterval);
+        btn.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>SIMULATE REPLAY [SPACE]</span>';
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleLoopPlay();
+      }
+    });
+  </script>
+</body>
+</html>

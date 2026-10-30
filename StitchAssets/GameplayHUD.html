@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECHO-ISM // Gameplay HUD & Level Viewport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              cyan: '#00d2ff',
+              cyanGlow: '#38bdf8',
+              surface: '#090e1a',
+              panel: '#0e1626',
+              mint: '#10b981',
+              amber: '#f59e0b',
+              purple: '#a78bfa',
+              spectral: '#818cf8',
+              crimson: '#ef4444',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #f8fafc;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Fixed 1152x648 game canvas standard frame */
+    .game-viewport {
+      width: 1152px;
+      height: 648px;
+      position: relative;
+      background: radial-gradient(circle at 50% 45%, #111a2e 0%, #090e1a 75%, #050811 100%);
+      border: 1px solid #1e293b;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 210, 255, 0.08);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Grid blueprint background */
+    .circuit-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(30, 41, 59, 0.45) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 41, 59, 0.45) 1px, transparent 1px);
+    }
+
+    /* Subtle scanline overlay for CRT / terminal aesthetic */
+    .scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    /* Soft pulse animations */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2.4s ease-in-out infinite;
+    }
+
+    @keyframes echo-float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+    .animate-echo-float {
+      animation: echo-float 2.8s ease-in-out infinite;
+    }
+
+    @keyframes beam-dash {
+      to { stroke-dashoffset: -32; }
+    }
+    .circuit-active {
+      stroke-dasharray: 8 6;
+      animation: beam-dash 1.2s linear infinite;
+    }
+
+    /* High contrast focus ring for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid #00d2ff;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <!-- ================= 1152 × 648 GAME VIEWPORT CONTAINER ================= -->
+  <div class="game-viewport rounded-lg relative flex flex-col justify-between" role="region" aria-label="ECHO-ISM Game Viewport">
+
+    <!-- LAYER 0: In-Engine Tilemap & Puzzle World (Room 01: The Split Signal) -->
+    <div class="absolute inset-0 circuit-grid">
+      
+      <!-- Room Bounds: Tile floor schematic (32px tile grid system) -->
+      <svg class="w-full h-full absolute inset-0" viewBox="0 0 1152 648" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Radial glow for illuminated nodes -->
+          <radialGradient id="mintGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="cyanGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#00d2ff" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="echoGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#818cf8" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+          </radialGradient>
+          
+          <linearGradient id="liveGregSkin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="60%" stop-color="#00d2ff"/>
+            <stop offset="100%" stop-color="#0284c7"/>
+          </linearGradient>
+
+          <linearGradient id="echoGregSkin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.8"/>
+            <stop offset="60%" stop-color="#818cf8" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.4"/>
+          </linearGradient>
+
+          <filter id="nodeShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.6"/>
+          </filter>
+        </defs>
+
+        <!-- ================= LEVEL ROOM WALL BOUNDS ================= -->
+        <!-- Outer Chamber Wall Outline -->
+        <rect x="160" y="80" width="832" height="480" rx="12" fill="#0b1324" stroke="#1e293b" stroke-width="3" />
+        
+        <!-- Interior Tile Floor Area -->
+        <rect x="168" y="88" width="816" height="464" rx="8" fill="#090f1d" />
+
+        <!-- Interior Dividing Wall Split (Dividing Left Wing from Right Wing) -->
+        <rect x="560" y="88" width="32" height="216" fill="#141e33" stroke="#1e293b" stroke-width="2" />
+        <rect x="560" y="376" width="32" height="176" fill="#141e33" stroke="#1e293b" stroke-width="2" />
+
+        <!-- Decorative blueprint markings inside the room -->
+        <g stroke="#1a253a" stroke-width="1" stroke-dasharray="4 8">
+          <line x1="200" y1="200" x2="520" y2="200" />
+          <line x1="200" y1="440" x2="520" y2="440" />
+          <line x1="630" y1="200" x2="950" y2="200" />
+          <line x1="630" y1="440" x2="950" y2="440" />
+        </g>
+
+        <!-- ================= PUZZLE MODULES & CIRCUITS ================= -->
+
+        <!-- Active Circuit Trace: From M01 Pressure Plate to M02 Door -->
+        <path d="M 336 416 L 440 416 L 440 336 L 560 336" 
+              stroke="#10b981" stroke-width="4" stroke-linecap="round" class="circuit-active" />
+        <path d="M 336 416 L 440 416 L 440 336 L 560 336" 
+              stroke="#34d399" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+
+        <!-- Secondary Circuit Trace: From Verification Terminal M06 to Exit Gate -->
+        <path d="M 880 180 L 880 320 L 920 320" 
+              stroke="#00d2ff" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.6"/>
+
+        <!-- ================= MODULE M01: PRESSURE PLATE (WEST WING) ================= -->
+        <!-- Glow Base under Pressure Plate -->
+        <circle cx="336" cy="416" r="48" fill="url(#mintGlow)" />
+        <!-- Floor Recessed Outer Ring -->
+        <circle cx="336" cy="416" r="32" fill="#0d1f2d" stroke="#10b981" stroke-width="2.5" filter="url(#nodeShadow)"/>
+        <!-- Depressed Plate Core -->
+        <circle cx="336" cy="416" r="22" fill="#064e3b" stroke="#34d399" stroke-width="2" />
+        <circle cx="336" cy="416" r="10" fill="#10b981" />
+        <!-- Status Text Label on Floor -->
+        <text x="336" y="468" fill="#10b981" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="1">M01 // [ACTIVE: HELD]</text>
+
+        <!-- ================= MODULE M02: DUAL MECHANISM DOOR (CENTER PASSAGE) ================= -->
+        <!-- Door Frame opening (X: 560, Y: 304 to 376 - 72px gap) -->
+        <rect x="560" y="304" width="32" height="72" fill="#050811" stroke="#334155" stroke-width="1.5"/>
+        <!-- Dissolving Energy Bulkhead (OPENED by Echo 1 holding M01) -->
+        <g opacity="0.25">
+          <line x1="564" y1="312" x2="588" y2="312" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
+          <line x1="564" y1="326" x2="588" y2="326" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
+          <line x1="564" y1="340" x2="588" y2="340" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
+          <line x1="564" y1="354" x2="588" y2="354" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
+          <line x1="564" y1="368" x2="588" y2="368" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
+        </g>
+        <!-- Lock Node Lights (Both Green = Unlocked) -->
+        <circle cx="576" cy="296" r="5" fill="#10b981" stroke="#064e3b" stroke-width="1.5"/>
+        <circle cx="576" cy="384" r="5" fill="#10b981" stroke="#064e3b" stroke-width="1.5"/>
+        <!-- Opened Passage Marker -->
+        <text x="576" y="278" fill="#34d399" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">GATE 01: UNLOCKED</text>
+
+        <!-- ================= MODULE M06: VERIFICATION TERMINAL (EAST WING) ================= -->
+        <g transform="translate(850, 150)">
+          <circle cx="30" cy="30" r="42" fill="url(#cyanGlow)" />
+          <!-- Terminal Pedestal Base -->
+          <rect x="6" y="8" width="48" height="44" rx="8" fill="#0f1e33" stroke="#00d2ff" stroke-width="2" filter="url(#nodeShadow)"/>
+          <!-- Holographic Display Screen -->
+          <rect x="14" y="15" width="32" height="20" rx="3" fill="#082f49" stroke="#38bdf8" stroke-width="1"/>
+          <!-- Verified Checkmark / Signal Wave -->
+          <path d="M 22 25 L 28 30 L 38 20" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <text x="30" y="66" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">TERMINAL // UNVERIFIED</text>
+        </g>
+
+        <!-- ================= LEVEL EXIT HUB (FAR EAST) ================= -->
+        <g transform="translate(930, 290)">
+          <!-- Exit Door Recess -->
+          <rect x="0" y="0" width="38" height="70" rx="4" fill="#06121e" stroke="#334155" stroke-width="2"/>
+          <circle cx="19" cy="35" r="14" fill="#0b233a" stroke="#00d2ff" stroke-width="1.5"/>
+          <polygon points="15,28 26,35 15,42" fill="#00d2ff" />
+          <text x="19" y="85" fill="#64748b" font-size="9" font-family="'JetBrains Mono', monospace" text-anchor="middle">SUB-STATION B</text>
+        </g>
+
+        <!-- ================= SPAWN POINT (WEST WING ENTRANCE) ================= -->
+        <g transform="translate(210, 310)">
+          <rect x="-24" y="-24" width="48" height="48" rx="6" fill="#091424" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <circle cx="0" cy="0" r="10" fill="none" stroke="#334155" stroke-width="1.5"/>
+          <text x="0" y="36" fill="#475569" font-size="9" font-family="'JetBrains Mono', monospace" text-anchor="middle">SPAWN [LOOP START]</text>
+        </g>
+
+        <!-- ================= RECORDED GHOST ECHO 1 (HOLDING PRESSURE SWITCH) ================= -->
+        <!-- Echo Motion Trail (Previous loop replay) -->
+        <g opacity="0.35" stroke="#818cf8" stroke-width="2" stroke-dasharray="3 5" fill="none">
+          <path d="M 210 310 Q 250 350, 336 416" />
+        </g>
+        
+        <!-- Ghost Echo 1 at M01 Pressure Plate -->
+        <g transform="translate(336, 416)" class="animate-echo-float">
+          <!-- Spectral Glow -->
+          <ellipse cx="0" cy="18" rx="26" ry="7" fill="#020617" opacity="0.4"/>
+          <!-- Roman Numeral Overhead Tag -->
+          <rect x="-10" y="-36" width="20" height="15" rx="3" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.2"/>
+          <text x="0" y="-25" fill="#c4b5fd" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" text-anchor="middle">I</text>
+          
+          <!-- Translucent Echo Body (32x36 native ratio) -->
+          <path d="M 0 -20 C 18 -20, 22 -3, 20 12 C 19 22, 14 24, 0 24 C -14 24, -19 22, -20 12 C -22 -3, -18 -20, 0 -20 Z" 
+                fill="url(#echoGregSkin)" stroke="#818cf8" stroke-width="2" stroke-dasharray="6 2" />
+          
+          <!-- Spectral Desaturated Eyes -->
+          <rect x="-8" y="-4" width="4.5" height="10" rx="2" fill="#1e1b4b"/>
+          <rect x="3.5" y="-4" width="4.5" height="10" rx="2" fill="#1e1b4b"/>
+          <circle cx="-6" cy="-1" r="1.2" fill="#c4b5fd"/>
+          <circle cx="5.5" cy="-1" r="1.2" fill="#c4b5fd"/>
+
+          <!-- Particle emitter indication -->
+          <circle cx="-16" cy="10" r="1.5" fill="#a78bfa" opacity="0.7"/>
+          <circle cx="18" cy="8" r="1" fill="#38bdf8" opacity="0.6"/>
+          <circle cx="-6" cy="28" r="1.5" fill="#818cf8" opacity="0.5"/>
+        </g>
+
+        <!-- ================= LIVE GREG (ACTIVE PLAYER - SPRINTING TO TERMINAL) ================= -->
+        <!-- Live Greg Positioned at X: 720, Y: 240 (Moving through East Corridor towards Terminal M06) -->
+        <g transform="translate(720, 240)">
+          <!-- Ground Shadow -->
+          <ellipse cx="0" cy="20" rx="20" ry="6" fill="#020617" opacity="0.6"/>
+          
+          <!-- Forward Step Lean (+8 deg squash-stretch body) -->
+          <g transform="rotate(6)">
+            <!-- Main Live Opaque Body -->
+            <path d="M 0 -22 C 18 -22, 23 -2, 21 14 C 20 23, 14 25, 0 25 C -14 25, -20 23, -21 14 C -23 -2, -18 -22, 0 -22 Z" 
+                  fill="url(#liveGregSkin)" stroke="#081b33" stroke-width="2.5" filter="url(#nodeShadow)"/>
+            
+            <!-- Belly Sheen Accent -->
+            <path d="M 0 -16 C 12 -16, 16 -2, 14 12 C 12 18, 7 20, 0 20 C -7 20, -12 18, -14 12 C -16 -2, -12 -16, 0 -16 Z" 
+                  fill="#ffffff" opacity="0.15"/>
+            
+            <!-- Energetic Eyes focused forward-right towards terminal -->
+            <rect x="-4" y="-3" width="5" height="11" rx="2.5" fill="#081b33"/>
+            <rect x="7" y="-3" width="5" height="11" rx="2.5" fill="#081b33"/>
+            <circle cx="-2.5" cy="0" r="1.5" fill="#ffffff"/>
+            <circle cx="8.5" cy="0" r="1.5" fill="#ffffff"/>
+          </g>
+
+          <!-- Dynamic Interaction Proximity Radius Ring (32px Euclidean boundary) -->
+          <circle cx="0" cy="5" r="44" fill="none" stroke="#00d2ff" stroke-width="1" stroke-dasharray="4 4" opacity="0.35"/>
+        </g>
+
+        <!-- Dynamic Context-Sensitive In-World Prompt: Above Terminal M06 / Approaching Greg -->
+        <g transform="translate(720, 185)" class="animate-pulse-subtle">
+          <rect x="-64" y="-14" width="128" height="26" rx="6" fill="#0b172a" stroke="#00d2ff" stroke-width="1.5" filter="url(#nodeShadow)"/>
+          <!-- Key Icon Badge -->
+          <rect x="-56" y="-9" width="16" height="16" rx="3" fill="#00d2ff"/>
+          <text x="-48" y="3" fill="#041224" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" text-anchor="middle">E</text>
+          <text x="6" y="3.5" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="0.5">VERIFY NODE</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- LAYER 1: Scanline overlay (restrained 2D pixel atmosphere) -->
+    <div class="absolute inset-0 scanlines opacity-40"></div>
+
+    <!-- ========================================================================= -->
+    <!-- LAYER 2: TOP PERIMETER HUD (1152px width, keeping center 80% free)       -->
+    <!-- ========================================================================= -->
+    <header class="relative z-20 px-6 pt-4 flex items-start justify-between pointer-events-auto">
+
+      <!-- Left Column: Room ID, Sector & State -->
+      <div class="flex items-center space-x-3 bg-brand-panel/90 border border-slate-700/80 px-4 py-2.5 rounded-lg shadow-lg backdrop-blur-sm">
+        <div class="w-8 h-8 rounded-md bg-cyan-950/80 border border-brand-cyan/60 flex items-center justify-center text-brand-cyan font-mono font-bold text-xs">
+          01
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-mono font-semibold tracking-wider text-brand-cyan uppercase">ROOM 01</span>
+            <span class="text-slate-500 text-xs">/</span>
+            <span class="text-xs text-slate-300 font-mono">SECTOR 01: BOOT CIRCUIT</span>
+          </div>
+          <h1 class="text-sm font-bold text-white tracking-wide">The Split Signal</h1>
+        </div>
+      </div>
+
+      <!-- Center Column: Master Loop Chrono Timer (High Contrast 15.00s Countdown) -->
+      <div class="flex flex-col items-center bg-brand-panel/95 border border-slate-700 px-6 py-2 rounded-xl shadow-2xl backdrop-blur-md w-72">
+        <div class="flex items-baseline justify-between w-full mb-1">
+          <span class="text-[10px] font-mono tracking-widest text-slate-400 font-semibold uppercase">LOOP CHRONO</span>
+          <div class="flex items-center space-x-1.5 font-mono text-xs font-bold text-brand-cyan">
+            <span class="text-lg text-white font-mono font-bold tracking-tight">09.42</span>
+            <span class="text-slate-500 text-xs">/ 15.00s</span>
+          </div>
+        </div>
+
+        <!-- High-Contrast Two-Tone Progress Bar -->
+        <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-700/80">
+          <div class="h-full bg-gradient-to-r from-brand-cyan to-brand-mint rounded-full transition-all duration-300 shadow-[0_0_12px_rgba(0,210,255,0.6)]" style="width: 62.8%;"></div>
+        </div>
+
+        <div class="flex justify-between w-full mt-1 text-[9px] font-mono text-slate-400">
+          <span>T=0.0s [START]</span>
+          <span class="text-emerald-400 font-semibold">T=5.58s ELAPSED</span>
+          <span>T=15.0s [RESET]</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Loop Attempt & Echo Active Pool Counters -->
+      <div class="flex items-center space-x-3 bg-brand-panel/90 border border-slate-700/80 px-4 py-2.5 rounded-lg shadow-lg backdrop-blur-sm">
+        
+        <!-- Loop Index Tracker -->
+        <div class="text-right border-r border-slate-700/80 pr-3">
+          <span class="block text-[10px] font-mono tracking-wider text-slate-400 uppercase font-semibold">ATTEMPT</span>
+          <div class="text-sm font-bold font-mono text-white">
+            LOOP <span class="text-brand-cyan">02</span><span class="text-slate-500">/03</span>
+          </div>
+        </div>
+
+        <!-- Active Echo Tracker & Slot Dots -->
+        <div>
+          <span class="block text-[10px] font-mono tracking-wider text-slate-400 uppercase font-semibold">ECHO POOL</span>
+          <div class="flex items-center space-x-1.5 mt-0.5">
+            <!-- Echo 1 (Active - Holding Switch M01) -->
+            <div class="w-3.5 h-3.5 rounded bg-brand-spectral/30 border border-brand-spectral flex items-center justify-center text-[9px] font-mono font-bold text-indigo-300" title="Echo 1: Active holding M01">
+              I
+            </div>
+            <!-- Echo 2 (Reserved / Next commit) -->
+            <div class="w-3.5 h-3.5 rounded bg-slate-800/80 border border-slate-700 border-dashed flex items-center justify-center text-[9px] font-mono text-slate-500" title="Echo 2: Ready for recording">
+              -
+            </div>
+            <!-- Echo 3 (Locked limit) -->
+            <div class="w-3.5 h-3.5 rounded bg-slate-900 border border-slate-800 flex items-center justify-center text-[9px] font-mono text-slate-600" title="Echo 3: Limit reserve">
+              -
+            </div>
+            <span class="text-xs font-mono font-semibold text-brand-purple ml-1">1/3</span>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- LAYER 3: DYNAMIC GAMEPLAY STATUS BANNER (FLOATING LEFT MARGIN)           -->
+    <!-- ========================================================================= -->
+    <div class="relative z-20 px-6 pointer-events-none flex justify-between items-center my-auto">
+      
+      <!-- Primary Mission Directive Card -->
+      <div class="bg-brand-panel/95 border-l-4 border-l-brand-cyan border-y border-r border-slate-700/80 p-3.5 rounded-r-lg shadow-xl backdrop-blur-md max-w-sm pointer-events-auto">
+        <div class="flex items-center space-x-2 mb-1">
+          <span class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></span>
+          <span class="text-[10px] font-mono tracking-widest text-brand-cyan uppercase font-bold">PRIMARY OBJECTIVE</span>
+        </div>
+        <p class="text-xs font-medium text-slate-100 leading-snug">
+          Coordinate with Echo I to hold <span class="text-emerald-400 font-semibold font-mono">Switch M01</span>, traverse unlocked bulkhead, and verify <span class="text-brand-cyan font-semibold font-mono">Terminal M06</span>.
+        </p>
+
+        <!-- Step Checklist -->
+        <div class="mt-2.5 pt-2 border-t border-slate-800 space-y-1 font-mono text-[10px]">
+          <div class="flex items-center space-x-2 text-emerald-400">
+            <svg class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            <span>Echo I: Depress Switch M01 (03.2s)</span>
+          </div>
+          <div class="flex items-center space-x-2 text-emerald-400">
+            <svg class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            <span>Bulkhead Gate 01 Disengaged</span>
+          </div>
+          <div class="flex items-center space-x-2 text-brand-cyan font-semibold">
+            <span class="w-3 h-3 rounded-full border border-brand-cyan flex items-center justify-center text-[8px]">&gt;</span>
+            <span>Live Greg: Verify Terminal M06</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Floating Mechanism Status Monitor (Godot M01-M08 telemetry) -->
+      <div class="bg-brand-panel/95 border border-slate-700/80 p-3 rounded-lg shadow-xl backdrop-blur-md w-56 pointer-events-auto space-y-2">
+        <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
+          <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">MODULE TELEMETRY</span>
+          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">SYNCED</span>
+        </div>
+
+        <!-- M01 Status -->
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center space-x-1.5 font-mono">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="text-slate-300 font-medium">M01 Switch</span>
+          </div>
+          <span class="font-mono text-[11px] text-emerald-400 font-semibold">HELD (ECHO I)</span>
+        </div>
+
+        <!-- M02 Status -->
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center space-x-1.5 font-mono">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="text-slate-300 font-medium">M02 Gate</span>
+          </div>
+          <span class="font-mono text-[11px] text-emerald-400 font-semibold">OPEN (100%)</span>
+        </div>
+
+        <!-- M06 Terminal Status -->
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center space-x-1.5 font-mono">
+            <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+            <span class="text-slate-300 font-medium">M06 Terminal</span>
+          </div>
+          <span class="font-mono text-[11px] text-brand-cyan font-semibold">READY [E]</span>
+        </div>
+
+        <!-- Substation Exit Status -->
+        <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800/80">
+          <div class="flex items-center space-x-1.5 font-mono">
+            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+            <span class="text-slate-400">Sub-Station B</span>
+          </div>
+          <span class="font-mono text-[11px] text-slate-500">LOCKED</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- LAYER 4: BOTTOM PERIMETER HUD & INTERACTIVE TIMELINE DRAWER              -->
+    <!-- ========================================================================= -->
+    <footer class="relative z-20 px-6 pb-4 flex flex-col space-y-2 pointer-events-auto">
+
+      <!-- Multi-Track Loop Timeline Drawer (Synchronized 0s - 15s Attempt Trackers) -->
+      <div class="bg-brand-panel/95 border border-slate-700/80 rounded-lg p-2.5 shadow-2xl backdrop-blur-md">
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-semibold">TEMPORAL TIMELINE SCRUBBER</span>
+            <span class="text-[9px] font-mono text-slate-500">| GODOT DETERMINISTIC SIMULATION</span>
+          </div>
+          <div class="text-[10px] font-mono text-brand-cyan font-semibold">
+            CURRENT: 09.42s
+          </div>
+        </div>
+
+        <!-- Timeline Tracks -->
+        <div class="space-y-1.5 font-mono text-[10px]">
+          
+          <!-- Track 1: Echo I Recorded Track -->
+          <div class="flex items-center space-x-2">
+            <div class="w-16 flex items-center space-x-1 text-brand-purple font-semibold">
+              <span class="w-2 h-2 rounded-sm bg-brand-spectral"></span>
+              <span>ECHO I</span>
+            </div>
+            <div class="flex-1 h-3.5 bg-slate-900 rounded relative overflow-hidden border border-slate-800">
+              <!-- Walk segment (0s to 3.2s) -->
+              <div class="absolute left-0 top-0 bottom-0 bg-indigo-900/60 border-r border-indigo-500" style="width: 21.3%;" title="Echo I: Traversed to M01 Switch"></div>
+              <!-- Held switch segment (3.2s to 15.0s) -->
+              <div class="absolute top-0 bottom-0 bg-brand-spectral/40 border-r border-brand-spectral flex items-center px-1 text-[8px] text-indigo-200" style="left: 21.3%; width: 78.7%;">
+                [HELD: M01 PRESSURE PLATE]
+              </div>
+            </div>
+            <span class="text-[9px] text-emerald-400 font-mono w-14 text-right">STABLE</span>
+          </div>
+
+          <!-- Track 2: Live Greg Recording Track -->
+          <div class="flex items-center space-x-2">
+            <div class="w-16 flex items-center space-x-1 text-brand-cyan font-semibold">
+              <span class="w-2 h-2 rounded-sm bg-brand-cyan animate-pulse"></span>
+              <span>LIVE</span>
+            </div>
+            <div class="flex-1 h-3.5 bg-slate-900 rounded relative overflow-hidden border border-brand-cyan/40">
+              <!-- Active recorded progress up to 9.42s -->
+              <div class="absolute left-0 top-0 bottom-0 bg-brand-cyan/30 border-r-2 border-brand-cyan flex items-center px-1 text-[8px] text-cyan-200" style="width: 62.8%;">
+                [ACTIVE RECORDING // SPRINTING TO M06]
+              </div>
+              <!-- Playhead Needle -->
+              <div class="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_8px_#ffffff]" style="left: 62.8%;"></div>
+            </div>
+            <span class="text-[9px] text-brand-cyan font-mono w-14 text-right">REC 09.4s</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Controls & Input Hotkeys Toolbar -->
+      <div class="flex items-center justify-between text-xs text-slate-300 px-1">
+        
+        <!-- Left: Movement & Interact Hotkeys -->
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-1.5 font-mono">
+            <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 text-[10px] font-bold">W</kbd>
+            <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 text-[10px] font-bold">A</kbd>
+            <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 text-[10px] font-bold">S</kbd>
+            <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 text-[10px] font-bold">D</kbd>
+            <span class="text-slate-400 text-xs ml-1">Move Live Greg</span>
+          </div>
+
+          <div class="flex items-center space-x-1.5 font-mono">
+            <kbd class="px-2 py-0.5 rounded bg-brand-cyan text-brand-surface font-bold text-[10px] shadow-sm">E</kbd>
+            <span class="text-slate-200 text-xs font-medium">Interact / Hold</span>
+          </div>
+        </div>
+
+        <!-- Center: Critical Reset / Commit Loop Hint -->
+        <div class="flex items-center space-x-2 bg-amber-950/40 border border-amber-800/60 px-3 py-1 rounded text-amber-300 font-mono text-[11px]">
+          <kbd class="px-1.5 py-0.5 rounded bg-amber-900 border border-amber-700 text-amber-200 font-bold text-[10px]">R</kbd>
+          <span>Commit Loop &amp; Spawn Echo</span>
+        </div>
+
+        <!-- Right: Pause / System Controls -->
+        <div class="flex items-center space-x-3 text-slate-400 font-mono text-xs">
+          <div class="flex items-center space-x-1">
+            <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 text-[10px]">ESC</kbd>
+            <span>Pause Menu</span>
+          </div>
+          <span class="text-slate-600">|</span>
+          <span class="text-brand-cyan text-[11px] font-semibold">ECHO-ISM v1.02</span>
+        </div>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+</body>
+</html>

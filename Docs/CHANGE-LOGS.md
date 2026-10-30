@@ -30,3 +30,27 @@
 - Added the `IInteractable` contract and a test switch with stable ID `test-switch`. Greg selects the nearest switch in range, displays its prompt, toggles it with E, and emits the stable target ID for a future recording system. The switch position and objective text both show whether it is active.
 - Verification: `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors. The Godot 4.7.2 Mono editor initialized the project, and Main launched without errors. A rendered frame confirmed the objective, room, Greg, and switch fit at 1152×648. HUD text contrast measured 13.74:1; the signal trace has 3.79:1 contrast against the room floor.
 - Axel's hands-on checks for wall blocking, switch use, movement speed, and interaction feel remain open; no feel adjustments have been made without that review.
+
+## Stage 2 Stitch UI integration and verification pass
+
+- Retrieved all three Stitch screens via the Stitch MCP server at `https://stitch.googleapis.com/mcp` using project ID `12186110244768219801`:
+  1. ECHO-ISM Design System & Art Direction Document (`5a9a3a71c9ee4095a7b17a8838a6a680`)
+  2. ECHO-ISM Modular Room Blueprints (`cf1eb0af371041f98bf4003bf37940b3`)
+  3. ECHO-ISM Gameplay HUD 1152x648 (`1cbbafd0451b40a69cd3999da0a64b37`)
+  Saved screenshots and HTML specifications into `StitchAssets/`.
+- Integrated the Stitch design system into `Scenes/UI/BasicHud.tscn`:
+  - Added a top perimeter bar with Room 01 badge, Sector tag, loop chrono timer display (`15.00s`), and loop/echo indicators (`LOOP 01/03`, `ECHOES [I] [ ] [ ]`).
+  - Added a primary objective card in the top-left area showing active mission status with high contrast.
+  - Added a context-sensitive interaction prompt badge with `[E]` key indicator and action label that appears when Greg is within interaction range and hides when out of range.
+  - Added a bottom controls hint bar (`WASD Move · E Interact · R Reset Loop`).
+  - Kept UI concise, readable, and free of filler text per antislop and antislop-human guidelines.
+- Refined game visuals in accordance with the Stitch design system:
+  - Updated Greg (`GregCharacter.cs`) with electric azure fill (`#00D2FF`), dark border (`#081B33`), directional eyes, and bright white specular highlight dots.
+  - Updated TestSwitch (`TestSwitch.cs`) with dark slate base (`#0E1626`), responsive borders, active mint (`#10B981`) and idle amber (`#F59E0B`) indicators.
+  - Updated RoomGeometry (`RoomGeometry.cs`) with deep surface background (`#090E1A`), crisp layered boundaries (`#1E293B` and `#334155`), and cyan signal paths (`#00D2FF`).
+- Verification:
+  - `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors.
+  - Headless physics test confirmed solid wall collision stops Greg at the room boundary.
+  - Interaction test confirmed the prompt appears within range and pressing interact toggles switch state and objective text.
+  - Contrast verified using `contrast-check.py`: `#F8FAFC` on `#0E1626` is 17.28:1 (PASS); `#00D2FF` on `#0E1626` is 10.04:1 (PASS); `#94A3B8` on `#0E1626` is 7.05:1 (PASS); `#818CF8` on `#0E1626` is 6.06:1 (PASS).
+  - Recorded a verified 1152x648 frame at `/tmp/echo-ism-s2-stitch00000000.png`.

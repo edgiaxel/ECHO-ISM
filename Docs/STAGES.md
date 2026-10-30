@@ -72,7 +72,7 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 ### S2.2 Movement
 - [x] Implement four-directional movement.
 - [x] Keep movement consistent across frame rates.
-- [ ] Prevent movement through ordinary solid walls.
+- [x] Prevent movement through ordinary solid walls.
 - [x] Confirm the camera and character scale work in the test room.
 - [x] Add basic movement feedback without polishing animation.
 
@@ -80,7 +80,7 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 - [x] Define a common interaction interface or base component.
 - [x] Add a context-sensitive interaction prompt.
 - [x] Implement one simple test switch.
-- [ ] Confirm the interaction works reliably near the object.
+- [x] Confirm the interaction works reliably near the object.
 - [x] Ensure the same interaction can later be recorded and replayed.
 
 ### S2.4 Review iteration

@@ -12,12 +12,15 @@ public partial class TestSwitch : Area2D, IInteractable
 
     public event Action<bool> StateChanged;
 
-    private static readonly Color BodyColor = new("#303B4B");
-    private static readonly Color EdgeColor = new("#AAB6C4");
-    private static readonly Color SignalColor = new("#478CBF");
-    private static readonly Color ActiveColor = new("#F2F4F7");
+    private static readonly Color BodyColor = new("#0E1626");
+    private static readonly Color EdgeColorInactive = new("#334155");
+    private static readonly Color EdgeColorActive = new("#00D2FF");
+    private static readonly Color SignalInactive = new("#334155");
+    private static readonly Color SignalActive = new("#10B981");
+    private static readonly Color CoreInactive = new("#F59E0B");
+    private static readonly Color CoreActive = new("#10B981");
 
-    public string GetPrompt(GregCharacter actor) => IsActive ? "E   Deactivate switch" : "E   Activate switch";
+    public string GetPrompt(GregCharacter actor) => IsActive ? "Deactivate switch" : "Activate switch";
 
     public bool TryInteract(GregCharacter actor)
     {
@@ -29,14 +32,21 @@ public partial class TestSwitch : Area2D, IInteractable
 
     public override void _Draw()
     {
+        var edgeColor = IsActive ? EdgeColorActive : EdgeColorInactive;
+        var signalColor = IsActive ? SignalActive : SignalInactive;
+        var coreColor = IsActive ? CoreActive : CoreInactive;
+
         var rect = new Rect2(-18f, -15f, 36f, 30f);
         DrawRect(rect, BodyColor);
-        DrawRect(rect, EdgeColor, false, 2f);
-        DrawLine(new Vector2(-29f, 0f), new Vector2(-18f, 0f), SignalColor, 3f);
-        DrawLine(new Vector2(18f, 0f), new Vector2(29f, 0f), SignalColor, 3f);
+        DrawRect(rect, edgeColor, false, 2f);
+
+        DrawLine(new Vector2(-29f, 0f), new Vector2(-18f, 0f), signalColor, 3f);
+        DrawLine(new Vector2(18f, 0f), new Vector2(29f, 0f), signalColor, 3f);
+
         var track = new Rect2(-10f, -5f, 20f, 10f);
         DrawRect(track, BodyColor);
-        DrawRect(track, EdgeColor, false, 1.5f);
-        DrawCircle(new Vector2(IsActive ? 5f : -5f, 0f), 3.2f, ActiveColor);
+        DrawRect(track, edgeColor, false, 1.5f);
+
+        DrawCircle(new Vector2(IsActive ? 5f : -5f, 0f), 3.5f, coreColor);
     }
 }

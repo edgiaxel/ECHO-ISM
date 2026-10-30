@@ -1,0 +1,148 @@
+# ECHO-ISM — Complete Game UI/UX, Visual Design & Art Direction Specification
+
+**Engine & Platform:** Godot 4.7.2 .NET (C#)  
+**Viewport Target:** 1152 × 648 (16:9 2D pixel scale / clean vector presentation)  
+**Art Style:** Clean 2D Digital Illustration, schematic digital-city linework, expressive blob silhouettes, restrained glows.  
+
+---
+
+## 1. Overall Art Direction & World Building
+
+### 1.1 The Visual Language of the Digital City
+The city is an abstract schematic world populated by gentle data beings. Instead of realistic cityscapes or heavy cyberpunk neon dystopias:
+- **Geometry:** Modular isometric-to-top-down floor grids with rounded corner nodes, circuit trace pathways, and clean geometric enclosures.
+- **Linework & Contrast:** Crisp 2px to 3px solid outlines (`#1e293b` on light, `#38bdf8` / `#0f172a` contrast on dark) with clean flat cell shading.
+- **Atmosphere Progression:**
+  1. **Harmonious State:** Soft cyan `#00d2ff`, mint `#10b981`, and deep twilight `#0b0f19`. Solid continuous circuit traces. Stable glowing nodes.
+  2. **Destabilizing / Misinformation State:** Circuit traces break and flicker (`dash-array` breaks). Warm amber warning flares (`#f59e0b`). Nodes show jitter/static glitch particles.
+  3. **Corrupted State:** Fragmented geometry, crimson/magenta corruption markers (`#ef4444`), severed link paths, desaturated environmental backdrops.
+  4. **Recovered State:** Soft harmonic surge, continuous cyan-mint data line bloom, harmonious sound pulse, particles settle into calm orbit.
+
+---
+
+## 2. Character Reference Sheet: Greg & Echoes
+
+### 2.1 Anatomy & Silhouette
+- **Base Shape:** Smooth rounded pear/teardrop blob (`width: 32px`, `height: 36px` in-engine sprite). Slightly squishy base with an elastic apex.
+- **Eyes:** Two simple expressive pill/oval capsules (`width: 5px`, `height: 9px`), with bright white specular dots (`#ffffff`). No complex eyelids or realistic sockets.
+- **Coloration:**
+  - **Live Greg:** Vibrant electric azure gradient/fill (`#00e5ff` core with `#0077ff` subtle lower shadow), solid dark border (`#081b33`, 2.5px), soft dynamic squash-and-stretch during 4-directional locomotion.
+  - **Echo Greg (Ghosts):** Translucent body (`alpha: 0.55`), hue-shifted to spectral cyan-violet (`#818cf8` / `#38bdf8`), subtle trailing ghost particles (1.2s decay), soft pulse aura, visible loop attempt marker (e.g. Roman numeral `I`, `II`, `III` or small badge icon floating overhead).
+
+### 2.2 Facial Expressions & Animation Poses
+1. **Idle:** Subtle 1.5s sine-wave vertical breathing stretch (`scale_y: 1.0 -> 1.05`), eyes blink periodically every 4 seconds.
+2. **Moving (WASD):** Directional lean (±8 degrees), squash on step contact (`scale: (1.1, 0.9)`), eyes orient forward towards movement vector.
+3. **Interacting / Operating (E):** Slight squat, eyes widen into focused circles, emit a radial contact chime ring.
+4. **Focused (Timing Slider):** Eyes narrow into focused horizontal slits with alert gleam, body tenses slightly.
+5. **Surprised / Timer Warning:** Blob bounces up (`scale: (0.85, 1.25)`), eyes dilate into wide rings, mouth pops open into tiny neat oval.
+6. **Perplexed / Collision:** Blob wobbles side to side like jelly, eyes roll upward playfully.
+7. **Reset / Despawn:** Dissolves smoothly into upward digital bubbles/squares over 0.3s without harsh gore or punitive explosion.
+
+---
+
+## 3. Gameplay HUD Architecture (1152 × 648 Layout)
+
+The HUD is designed with strict perimeter discipline, keeping the central 80% puzzle canvas free of obstruction.
+
+```
++-----------------------------------------------------------------------------------+
+| [ECHO-ISM] Room 01: The Split Signal               [LOOP 02/03]  [ECHOES: 1/3]   |
+| (Level ID & Display Name)                                (Active Echo Pool)       |
+|                                                                                   |
+|  [================ 09.4s / 15.0s ================]                                |
+|                      (Central Loop Chrono Bar)                                    |
+|                                                                                   |
+|                                                                                   |
+|                               [PUZZLE PLAY AREA]                                  |
+|                                                                                   |
+|                                                                                   |
+|                                                                                   |
+| [!] OBJECTIVE: Route verified signal to Sub-Station B                             |
+|                                                                                   |
+| [E] Interact / Hold                  [R] Commit & Reset Loop    [ESC] Pause       |
++-----------------------------------------------------------------------------------+
+```
+
+### Key Elements:
+1. **Loop Chrono Timer:** Centered top bar. High-contrast countdown (`15.00s`), smooth radial or linear bar depletion. Flashes amber at 3.0s, pulse alarm at 1.0s.
+2. **Loop & Echo Trackers:** Shows which recorded ghost is active (Ghost 1: active holding Door A; Live Greg: moving to Terminal B).
+3. **Dynamic Context Prompt:** Floating badge above interactables (`[E] Activate Terminal`, `[E] Hold Plate`) that only appears within 32px Euclidean interaction radius.
+4. **Echo Timeline Scrubber (Bottom Drawer / Collapsible):** Mini multi-track timeline displaying tracks `Echo 1 [0s - 15s]`, `Echo 2 [0s - 15s]`, and `Live Greg [Recording]`.
+
+---
+
+## 4. Reusable Puzzle Module Library (Godot Scenes)
+
+Every module inherits from `BasePuzzleModule.cs` with deterministic state inputs and outputs:
+
+| Module Code | Name | Idle State | Active State | Echo Compatible? | Failure / Reset Mode |
+|---|---|---|---|---|---|
+| **M01** | Pressure Switch | Recessed grey disc with glowing rim | Depresses 4px, rim turns mint green, sends high signal | Yes (Solid or Anchor echo) | Resets to UP position on loop rewind |
+| **M02** | Dual Mechanism Door | Solid energy bulkhead with 2 unlit lock nodes | Bulkhead dissolves, both lock nodes glow green | Yes | Closes immediately if either signal drops |
+| **M03** | Timed Window Door | Flashing amber shutter with countdown wheel | Opens only during seconds [T_start, T_end] | Yes | Locks outside active temporal window |
+| **M04** | Timing Slider Track | Oscillating needle across grey/amber rail | Needle locked within green success sweet spot | Yes (via recorded press) | Over/under overshoot triggers red blip |
+| **M05** | Synchronization Gate | Twin receiver pylons awaiting paired signals | Both pylons charged within ±0.35s tolerance window | Yes (multi-echo timing) | Desynchronized signal fades after window |
+| **M06** | Verification Terminal | Holographic screen displaying noisy unverified packet | Screen displays clean padlock + verified green checkmark | Yes (recorded terminal hack) | Drops if verification pipeline breaks |
+| **M07** | Signal Relay Node | Dark obsidian pylon with disconnected trace port | Transmits beam to adjacent node, circuit line illuminates | Yes | Signal breaks if intermediary echo leaves |
+| **M08** | Moving Barrier | Deterministic linear rail platform moving back/forth | Swapped route or blocked barrier via held switch | Yes | Follows loop timeline cycle |
+
+---
+
+## 5. Reusable Level Room Templates
+
+### Template 1: The Teaching Gate (Basic Switch Room)
+- **Grid:** 16 × 10 tiles.
+- **Layout:** Room split in half by Wall with Bulkhead Door (M02). Pressure plate (M01) located in South-West alcove. Exit gate in North-East.
+- **Solution:** 
+  - *Loop 1:* Live Greg runs to Southwest plate, stands on it until 12s, loops expires.
+  - *Loop 2:* Echo 1 replays walking to plate and holding it down. Door opens at 3.2s. Live Greg sprints straight through the open door to the room exit.
+
+### Template 2: Dual Protocol Chamber (Dual Switch Room)
+- **Grid:** 20 × 12 tiles.
+- **Layout:** Two symmetrical switch corridors (West and East wings) separated by a glass central divider. Central door requires simultaneous input.
+- **Solution:** Echo 1 handles West switch corridor; Live Greg charges East switch corridor, coordinating simultaneous arrival at 6.5s.
+
+### Template 3: The Frequency Lock (Timing Slider Room)
+- **Grid:** 18 × 12 tiles.
+- **Layout:** Player must traverse a long serpentine corridor while a timing slider mechanism controls access windows to two interior security gates.
+- **Solution:** Echo 1 operates the slider console at exactly 4.0s (opening Gate 1) and 8.0s (opening Gate 2), allowing Live Greg to run uninterrupted.
+
+### Template 4: Signal Truth Relay (Verification Room)
+- **Grid:** 22 × 14 tiles.
+- **Layout:** An unverified corrupted broadcast node blocks the exit. A verification console sits in an isolated northern data room.
+- **Solution:** Echo 1 reaches terminal and inputs verification sequence. Once verified, the broadcast node purges its corrupted corruption aura and converts into a passable bridge for Live Greg.
+
+---
+
+## 6. Visual Effects & Shader Architecture (Godot 2D)
+
+1. **Echo Translucency Shader (`echo_ghost.gdshader`):**
+   - Applies Fresnel edge highlight, 45% alpha fill, and subtle vertical scanline displacement (`sin(SCREEN_UV.y * 120.0 + TIME * 4.0) * 0.05`).
+2. **Circuit Connection Line Pulse (`circuit_trace.gdshader`):**
+   - Uses `Line2D` with UV scrolling gradient: `vec4 col = texture(TEXTURE, vec2(UV.x - TIME * speed, UV.y));` providing directional energy flow.
+3. **System Destabilization & Recovery Transition:**
+   - Destabilized zones feature chromatic aberration (1.5px RGB split) and broken tile textures.
+   - Upon puzzle solve, a 0.8s radial recovery shockwave (`color_recover_wave.gdshader`) expands outward from the objective node, smoothly re-saturating tiles and welding severed circuit lines.
+
+---
+
+## 7. Complete Audio Direction Sheet
+
+| Event / Action | Sound Character | Duration | Emotional / UX Feedback |
+|---|---|---|---|
+| **Greg Footsteps** | Gentle rubbery pop/tock on grid tiles (pitch-randomized ±8%) | 60ms | Playful, non-fatiguing, tactile feedback |
+| **Echo Spawn** | Warm reverse chime dissolving into digital phase shimmer | 420ms | Sense of temporal rewind and friendly companionship |
+| **Switch Press (M01)** | Deep satisfying tactile mechanical thud + soft electronic ping | 180ms | Definite confirmation of state change |
+| **Door Unlocked (M02)** | Resonant harmonic chord swelling from sub-bass to mint chime | 650ms | Clear success, route opened, tension released |
+| **Timing Slider Stop** | Crisp snare tap with sweet-spot bell accent (or dull clunk on fail) | 120ms | Immediate precision feedback without punishment |
+| **Verification Success** | Clean 3-note ascending arpeggio (C5 -> E5 -> G5) | 500ms | Cognitive clarity; "truth restored" sensation |
+| **Loop 3s Warning** | Subtle pulsing radar ping (800Hz, soft attack) | 200ms x 3 | Urgent temporal awareness without panic |
+| **Level Victory** | Warm analog synthesizer swell + joyous harmonic resolve | 1.8s | Relief, restoration, mastery over loop planning |
+| **Ambient Music** | Minimalist Rhodes electric piano, tape warmth, 92 BPM soft pulse | Infinite loop | Thoughtful, contemplative puzzle atmosphere |
+
+---
+
+## 8. Screen Flow & Navigation Layouts
+- **Title Screen:** Centered minimalist ECHO-ISM typographic mark, 3D/parallax floating Greg blob smiling, clean slate button pill stack (Play, Stages, Settings, Credits), background showing panoramic miniature digital city silhouette with drifting energy packets.
+- **Level Select Map:** Node-graph blueprint schematic of digital city sectors: Sector 01 (Boot Circuit), Sector 02 (Routing Hub), Sector 03 (Integrity Array). Unlocked levels are glowing mint nodes; locked levels are dimmed slate padlocks.
+- **Pause & Retry Modal:** Minimalist translucent scrim modal with non-destructive instant hotkey retry (`[R] Quick Retry`, `[ESC] Resume`, `[O] Level Map`).
