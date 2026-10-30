@@ -19,7 +19,7 @@ public partial class GregCharacter : CharacterBody2D
 
     public Vector2 Facing => _facing;
 
-    private Vector2 _facing = Vector2.Down;
+    protected Vector2 _facing = Vector2.Down;
     private IInteractable _nearbyInteractable;
     private string _currentPrompt = string.Empty;
     private Area2D _interactionArea = null!;
@@ -33,8 +33,11 @@ public partial class GregCharacter : CharacterBody2D
 
     public override void _Ready()
     {
-        _interactionArea = GetNode<Area2D>("InteractionArea");
-        _interactionArea.Monitoring = !IsEcho;
+        _interactionArea = GetNodeOrNull<Area2D>("InteractionArea");
+        if (_interactionArea is not null)
+        {
+            _interactionArea.Monitoring = !IsEcho;
+        }
         ConfigureMovementInput();
         QueueRedraw();
     }
@@ -103,6 +106,11 @@ public partial class GregCharacter : CharacterBody2D
 
     private void UpdateNearbyInteractable()
     {
+        if (_interactionArea is null)
+        {
+            return;
+        }
+
         IInteractable nearest = null;
         var nearestDistance = float.MaxValue;
 

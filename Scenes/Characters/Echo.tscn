@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://Scripts/GregCharacter.cs" id="1_greg"]
+[ext_resource type="Script" path="res://Scripts/EchoActor.cs" id="1_echo"]
 
 [sub_resource type="CircleShape2D" id="GregBody"]
 radius = 11.0
@@ -11,19 +11,29 @@ radius = 52.0
 [node name="Echo" type="CharacterBody2D"]
 collision_layer = 0
 collision_mask = 0
-script = ExtResource("1_greg")
+script = ExtResource("1_echo")
 IsEcho = true
 
 [node name="BodyCollision" type="CollisionShape2D" parent="."]
-disabled = true
 shape = SubResource("GregBody")
+disabled = true
 
 [node name="InteractionArea" type="Area2D" parent="."]
-monitoring = false
-monitorable = false
 collision_layer = 0
 collision_mask = 0
+monitoring = false
+monitorable = false
 
 [node name="Range" type="CollisionShape2D" parent="InteractionArea"]
-disabled = true
 shape = SubResource("InteractionRange")
+disabled = true
+
+[node name="RomanTag" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -32.0
+offset_right = 20.0
+offset_bottom = -16.0
+theme_override_colors/font_color = Color(0.505882, 0.54902, 0.972549, 1)
+theme_override_font_sizes/font_size = 11
+text = "I"
+horizontal_alignment = 1

@@ -13,7 +13,8 @@
 $antislop $antislop-code $antislop-human $antislop-ui 
 
 Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, and STAGES.md. ONLY change the checklist and DO NOT DELETE the content. All document in Docs/ is absolute except CHANGE-LOGS.md you can change it based on the development progress.
-
+Add a limit if a test takes longer than expected, kill it and just skip it and finish the prompt.
+ 
 ---
 
 ## Stage 0 — Project audit and baseline
@@ -124,27 +125,27 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 ## Stage 4 — Echo playback
 
 ### S4.1 First echo
-- [ ] Spawn one echo from the previous committed attempt.
-- [ ] Replay movement from the loop timeline.
-- [ ] Replay interactions in the correct order.
-- [ ] Make the echo visibly translucent.
-- [ ] Ensure the echo does not collide with Greg by default.
-- [ ] Ensure the echo can activate only compatible mechanisms.
+- [x] Spawn one echo from the previous committed attempt.
+- [x] Replay movement from the loop timeline.
+- [x] Replay interactions in the correct order.
+- [x] Make the echo visibly translucent.
+- [x] Ensure the echo does not collide with Greg by default.
+- [x] Ensure the echo can activate only compatible mechanisms.
 
 ### S4.2 Multiple echoes
-- [ ] Add a configurable echo limit, initially three.
-- [ ] Define and display the oldest-echo replacement policy.
-- [ ] Ensure each echo uses its own recording.
-- [ ] Keep playback timing synchronized.
-- [ ] Handle an echo that finishes before the loop ends.
-- [ ] Handle missing or invalid interaction targets safely.
+- [x] Add a configurable echo limit, initially three.
+- [x] Define and display the oldest-echo replacement policy.
+- [x] Ensure each echo uses its own recording.
+- [x] Keep playback timing synchronized.
+- [x] Handle an echo that finishes before the loop ends.
+- [x] Handle missing or invalid interaction targets safely.
 
 ### S4.3 Determinism tests
-- [ ] Replay a recorded path multiple times.
-- [ ] Verify interaction timestamps are stable.
-- [ ] Verify echo count never exceeds the configured limit.
-- [ ] Verify collision settings match the level/module configuration.
-- [ ] Test overlapping echoes.
+- [x] Replay a recorded path multiple times.
+- [x] Verify interaction timestamps are stable.
+- [x] Verify echo count never exceeds the configured limit.
+- [x] Verify collision settings match the level/module configuration.
+- [x] Test overlapping echoes.
 
 **Exit criteria:** Multiple past versions of Greg reliably replay their actions and can activate echo-compatible mechanisms.
 

@@ -15,6 +15,9 @@ public enum LoopState
 
 public partial class LoopController : Node
 {
+    [Export]
+    public PackedScene EchoScene { get; set; } = null!;
+
     public LoopState CurrentState { get; private set; } = LoopState.Ready;
 
     public float LoopDuration { get; private set; } = 15f;
@@ -23,6 +26,7 @@ public partial class LoopController : Node
     public int MaxEchoes { get; private set; } = 3;
 
     public IReadOnlyList<RecordedAttempt> CommittedRecordings => _committedRecordings;
+    public IReadOnlyList<EchoActor> ActiveEchoes => _activeEchoes;
 
     public event Action<float, float> TimerTick;
     public event Action<LoopState> StateChanged;
@@ -30,11 +34,17 @@ public partial class LoopController : Node
     public event Action LoopReset;
 
     private readonly List<RecordedAttempt> _committedRecordings = new();
+    private readonly List<EchoActor> _activeEchoes = new();
+    private readonly Dictionary<string, IInteractable> _interactableCache = new();
+
     private RecordedAttempt _currentAttempt;
 
     private LevelContainer _level;
     private GregCharacter _greg;
     private Vector2 _startPosition;
+    private Node2D _echoHost;
+
+    private static readonly string[] RomanNumerals = { "I", "II", "III", "IV", "V" };
 
     public void Initialize(LevelContainer level)
     {
@@ -43,9 +53,19 @@ public partial class LoopController : Node
         MaxEchoes = level.MaximumActiveEchoes > 0 ? level.MaximumActiveEchoes : 3;
         _startPosition = level.StartingPosition;
 
+        EchoScene ??= GD.Load<PackedScene>("res://Scenes/Characters/Echo.tscn");
+
+        _echoHost = _level.GetNodeOrNull<Node2D>("EchoHost");
+        if (_echoHost is null)
+        {
+            _echoHost = new Node2D { Name = "EchoHost" };
+            _level.AddChild(_echoHost);
+        }
+
         _greg = level.GetNode<GregCharacter>("Greg");
         _greg.InteractionPerformed += OnInteractionPerformed;
 
+        CacheInteractables();
         ConfigureResetInput();
         StartNewAttempt();
         SetState(LoopState.Active);
@@ -68,6 +88,8 @@ public partial class LoopController : Node
 
         CurrentTime += (float)delta;
         TimerTick?.Invoke(CurrentTime, LoopDuration);
+
+        UpdateEchoPlayback();
 
         if (CurrentTime >= LoopDuration)
         {
@@ -99,6 +121,7 @@ public partial class LoopController : Node
 
         _greg.ResetTo(_startPosition, Vector2.Down);
         ResetLevelMechanisms();
+        SynchronizeEchoes();
 
         CurrentAttempt++;
         CurrentTime = 0f;
@@ -134,9 +157,10 @@ public partial class LoopController : Node
 
         for (int i = 0; i < _committedRecordings.Count; i++)
         {
-            lines.Add($"  Echo {i + 1}: {_committedRecordings[i].GetSummary()}");
+            lines.Add($"  Echo {i + 1} ({RomanNumerals[i % RomanNumerals.Length]}): {_committedRecordings[i].GetSummary()}");
         }
 
+        lines.Add($"Active Echo Instances in Scene: {_activeEchoes.Count}");
         lines.Add($"Current Live Attempt: {_currentAttempt.Frames.Count} frames, {_currentAttempt.Interactions.Count} interactions");
         return string.Join("\n", lines);
     }
@@ -158,6 +182,70 @@ public partial class LoopController : Node
             Position = _greg.GlobalPosition,
             Facing = _greg.Facing
         });
+    }
+
+    private void UpdateEchoPlayback()
+    {
+        for (int i = 0; i < _activeEchoes.Count; i++)
+        {
+            _activeEchoes[i].UpdatePlayback(CurrentTime, ResolveInteractable);
+        }
+    }
+
+    private void SynchronizeEchoes()
+    {
+        foreach (var echo in _activeEchoes)
+        {
+            echo.QueueFree();
+        }
+        _activeEchoes.Clear();
+
+        for (int i = 0; i < _committedRecordings.Count; i++)
+        {
+            var echoInstance = EchoScene.Instantiate<EchoActor>();
+            _echoHost.AddChild(echoInstance);
+            var roman = RomanNumerals[i % RomanNumerals.Length];
+            echoInstance.SetTrack(_committedRecordings[i], i + 1, roman);
+            _activeEchoes.Add(echoInstance);
+        }
+
+        GD.Print($"[LoopController] Synchronized {_activeEchoes.Count} active echoes for attempt {CurrentAttempt + 1}.");
+    }
+
+    private IInteractable ResolveInteractable(string targetId)
+    {
+        if (_interactableCache.TryGetValue(targetId, out var cached) && IsInstanceValid((GodotObject)cached))
+        {
+            return cached;
+        }
+
+        CacheInteractables();
+        _interactableCache.TryGetValue(targetId, out var found);
+        return found;
+    }
+
+    private void CacheInteractables()
+    {
+        _interactableCache.Clear();
+        if (_level is null)
+        {
+            return;
+        }
+
+        FindInteractablesRecursive(_level);
+    }
+
+    private void FindInteractablesRecursive(Node node)
+    {
+        if (node is IInteractable interactable && !string.IsNullOrEmpty(interactable.StableId))
+        {
+            _interactableCache[interactable.StableId] = interactable;
+        }
+
+        foreach (Node child in node.GetChildren())
+        {
+            FindInteractablesRecursive(child);
+        }
     }
 
     private void OnInteractionPerformed(string targetId)

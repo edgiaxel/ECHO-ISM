@@ -72,3 +72,24 @@
   - `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors.
   - Executed automated validation suite verifying initial states, movement frame logging, interaction event recording, manual reset, duplicate event prevention, max echo pool cap, timer expiration reset, and data repeatability.
   - Recorded a verified in-engine frame at `/tmp/echo-ism-stage300000000.png`.
+
+## Stage 4: Echo playback
+
+- Implemented `EchoActor` (`Scripts/EchoActor.cs`) inheriting `GregCharacter`:
+  - Translucent spectral cyan-violet appearance (`#818CF8` at 0.55 alpha, `#38BDF8` outline) with overhead Roman numeral tag (`I`, `II`, `III`).
+  - Ghost collision configuration: `CollisionLayer = 0` and `CollisionMask = 0`, ensuring non-blocking movement that passes through Greg and other echoes without physics jitter.
+  - Deterministic timeline playback: samples recorded frames via binary search by timestamp and updates world position and facing direction in lockstep with `CurrentTime`.
+  - Sequential interaction replay: replays timestamped interaction events on target mechanisms in chronological order.
+  - Safe error handling: safely logs and skips missing or disabled targets without desyncing playback.
+  - Handled early finish: when an echo reaches the end of its recording before the loop finishes, it sets `IsPlaybackFinished` and holds its final position without disappearing.
+- Updated `IInteractable` contract (`Scripts/IInteractable.cs`):
+  - Added `AcceptsEchoes` property to explicitly declare whether a mechanism accepts echo actors.
+  - Implemented on `TestSwitch.cs` to filter echo interactions.
+- Updated `LoopController` (`Scripts/LoopController.cs`):
+  - Manages active echo instances under an `EchoHost` container in the level.
+  - Spawns synchronized echo actors for all committed attempts upon loop reset.
+  - Enforces configurable echo limit (3) with oldest-echo replacement policy when exceeding capacity.
+- Verification:
+  - `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors.
+  - Executed automated validation suite verifying first echo spawning, movement timeline playback, interaction replay, translucent appearance, ghost collision, mechanism compatibility filter, dual/triple echo synchronization, oldest-echo replacement policy, safe missing-target handling, and overlapping echo stability.
+  - Recorded in-engine frame at `/tmp/echo-ism-stage400000000.png`.

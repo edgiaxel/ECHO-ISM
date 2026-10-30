@@ -8,6 +8,9 @@ public partial class TestSwitch : Area2D, IInteractable, IResettable
     [Export]
     public string StableId { get; set; } = "test-switch";
 
+    [Export]
+    public bool AcceptsEchoes { get; set; } = true;
+
     public bool IsActive { get; private set; }
 
     public event Action<bool> StateChanged;
@@ -24,6 +27,11 @@ public partial class TestSwitch : Area2D, IInteractable, IResettable
 
     public bool TryInteract(GregCharacter actor)
     {
+        if (actor.IsEcho && !AcceptsEchoes)
+        {
+            return false;
+        }
+
         IsActive = !IsActive;
         QueueRedraw();
         StateChanged?.Invoke(IsActive);
