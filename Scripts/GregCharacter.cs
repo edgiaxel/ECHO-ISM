@@ -17,6 +17,8 @@ public partial class GregCharacter : CharacterBody2D
     public event Action<string> PromptChanged;
     public event Action<string> InteractionPerformed;
 
+    public Vector2 Facing => _facing;
+
     private Vector2 _facing = Vector2.Down;
     private IInteractable _nearbyInteractable;
     private string _currentPrompt = string.Empty;
@@ -59,6 +61,17 @@ public partial class GregCharacter : CharacterBody2D
         {
             Interact();
         }
+    }
+
+    public void ResetTo(Vector2 startPosition, Vector2 facing)
+    {
+        GlobalPosition = startPosition;
+        Velocity = Vector2.Zero;
+        _facing = facing;
+        _nearbyInteractable = null;
+        _currentPrompt = string.Empty;
+        PromptChanged?.Invoke(string.Empty);
+        QueueRedraw();
     }
 
     public override void _Draw()

@@ -3,7 +3,7 @@ using System;
 
 namespace ECHOISM;
 
-public partial class TestSwitch : Area2D, IInteractable
+public partial class TestSwitch : Area2D, IInteractable, IResettable
 {
     [Export]
     public string StableId { get; set; } = "test-switch";
@@ -28,6 +28,16 @@ public partial class TestSwitch : Area2D, IInteractable
         QueueRedraw();
         StateChanged?.Invoke(IsActive);
         return true;
+    }
+
+    public void ResetState()
+    {
+        if (IsActive)
+        {
+            IsActive = false;
+            QueueRedraw();
+            StateChanged?.Invoke(IsActive);
+        }
     }
 
     public override void _Draw()

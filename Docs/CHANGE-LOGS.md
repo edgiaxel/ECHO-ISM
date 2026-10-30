@@ -54,3 +54,21 @@
   - Interaction test confirmed the prompt appears within range and pressing interact toggles switch state and objective text.
   - Contrast verified using `contrast-check.py`: `#F8FAFC` on `#0E1626` is 17.28:1 (PASS); `#00D2FF` on `#0E1626` is 10.04:1 (PASS); `#94A3B8` on `#0E1626` is 7.05:1 (PASS); `#818CF8` on `#0E1626` is 6.06:1 (PASS).
   - Recorded a verified 1152x648 frame at `/tmp/echo-ism-s2-stitch00000000.png`.
+
+## Stage 3: Loop timer, recording, and reset
+
+- Implemented `LoopController` (`Scripts/LoopController.cs`) to manage loop states: `Ready`, `Active`, `Committing`, `Resetting`, and `Completed`.
+- Configurable loop duration initialized to 15.0 seconds from `LevelContainer`, displayed as countdown on the HUD with an animated progress bar.
+- Implemented state guards preventing duplicate reset or commit events during active transitions.
+- Automatic reset triggers on timer expiration (`CurrentTime >= LoopDuration`); manual reset triggers via the `R` key (`reset_loop` action).
+- Implemented attempt recording data structures (`Scripts/Recording/RecordedAttempt.cs`):
+  - Records position and facing direction per physics frame on a stable loop-relative timeline.
+  - Records interaction events with timestamp and target `StableId` (`test-switch`).
+- Implemented `IResettable` contract (`Scripts/IResettable.cs`) and integrated it into `TestSwitch.cs` to reset mechanisms upon loop reset.
+- Reset sequence returns Greg to level start position and default facing, clears prompts, resets mechanisms, resets the timer to 0, and increments attempt counter.
+- Enforced finite echo pool policy: committed recordings are preserved up to `MaximumActiveEchoes` (3), replacing the oldest recording upon exceeding the limit.
+- Added development-only track inspector (`DevInspector`) toggleable with `F1` and printable diagnostics via `GetRecordedTracksSummary()`.
+- Verification:
+  - `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors.
+  - Executed automated validation suite verifying initial states, movement frame logging, interaction event recording, manual reset, duplicate event prevention, max echo pool cap, timer expiration reset, and data repeatability.
+  - Recorded a verified in-engine frame at `/tmp/echo-ism-stage300000000.png`.

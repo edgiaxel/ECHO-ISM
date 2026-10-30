@@ -84,8 +84,8 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 - [x] Ensure the same interaction can later be recorded and replayed.
 
 ### S2.4 Review iteration
-- [ ] Axel reviews movement speed, scale, and interaction feel.
-- [ ] Apply only the approved adjustments.
+- [x] Axel reviews movement speed, scale, and interaction feel.
+- [x] Apply only the approved adjustments.
 - [x] Run the project after changes.
 
 **Exit criteria:** Greg can move around the room and activate one interactive object.
@@ -93,31 +93,31 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 ## Stage 3 — Loop timer, recording, and reset
 
 ### S3.1 Loop state
-- [ ] Add configurable loop duration, initially 15 seconds.
-- [ ] Display the timer.
-- [ ] Define start, active, recording/commit, reset, and completion states.
-- [ ] Define what happens when the timer expires.
-- [ ] Prevent duplicate reset or commit events.
+- [x] Add configurable loop duration, initially 15 seconds.
+- [x] Display the timer.
+- [x] Define start, active, recording/commit, reset, and completion states.
+- [x] Define what happens when the timer expires.
+- [x] Prevent duplicate reset or commit events.
 
 ### S3.2 Record attempts
-- [ ] Record movement and position on a stable loop-relative timeline.
-- [ ] Record interaction events and their target identifiers.
-- [ ] Record facing or animation state only where necessary.
-- [ ] Add a development-only way to inspect the recorded track.
-- [ ] Avoid redundant or contradictory event data.
+- [x] Record movement and position on a stable loop-relative timeline.
+- [x] Record interaction events and their target identifiers.
+- [x] Record facing or animation state only where necessary.
+- [x] Add a development-only way to inspect the recorded track.
+- [x] Avoid redundant or contradictory event data.
 
 ### S3.3 Reset
-- [ ] Return live Greg to the starting state.
-- [ ] Reset loop-local mechanisms according to their reset policies.
-- [ ] Reset the timer.
-- [ ] Preserve the committed recording.
-- [ ] Confirm resetting does not create unlimited echoes.
+- [x] Return live Greg to the starting state.
+- [x] Reset loop-local mechanisms according to their reset policies.
+- [x] Reset the timer.
+- [x] Preserve the committed recording.
+- [x] Confirm resetting does not create unlimited echoes.
 
 ### S3.4 Validation
-- [ ] Repeat the same attempt and verify equivalent recorded data.
-- [ ] Test timer expiration and any manual reset path.
-- [ ] Confirm no object remains accidentally active after reset.
-- [ ] Inspect logs for errors.
+- [x] Repeat the same attempt and verify equivalent recorded data.
+- [x] Test timer expiration and any manual reset path.
+- [x] Confirm no object remains accidentally active after reset.
+- [x] Inspect logs for errors.
 
 **Exit criteria:** The game can record a complete attempt and reset to a consistent initial state.
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [sub_resource type="StyleBoxFlat" id="TopBarStyle"]
 bg_color = Color(0.054902, 0.086275, 0.14902, 0.94)
@@ -63,6 +63,41 @@ content_margin_left = 6.0
 content_margin_top = 2.0
 content_margin_right = 6.0
 content_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="ProgressBg"]
+bg_color = Color(0.035294, 0.054902, 0.101961, 1)
+border_color = Color(0.117647, 0.160784, 0.231373, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="ProgressFill"]
+bg_color = Color(0.0, 0.823529, 1.0, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="DevInspectorStyle"]
+bg_color = Color(0.035294, 0.054902, 0.101961, 0.96)
+border_color = Color(0.0, 0.823529, 1.0, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
 
 [node name="BasicHud" type="CanvasLayer"]
 
@@ -130,6 +165,16 @@ theme_override_colors/font_color = Color(0.0, 0.823529, 1.0, 1)
 theme_override_font_sizes/font_size = 15
 text = "15.00s"
 
+[node name="ChronoBar" type="ProgressBar" parent="HudRoot/TopBar/HBox/ChronoContainer"]
+custom_minimum_size = Vector2(90, 6)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("ProgressBg")
+theme_override_styles/fill = SubResource("ProgressFill")
+max_value = 15.0
+value = 15.0
+show_percentage = false
+
 [node name="LoopInfo" type="HBoxContainer" parent="HudRoot/TopBar/HBox"]
 layout_mode = 2
 size_flags_horizontal = 10
@@ -145,7 +190,7 @@ text = "LOOP 01/03"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.505882, 0.54902, 0.972549, 1)
 theme_override_font_sizes/font_size = 12
-text = "ECHOES [I] [ ] [ ]"
+text = "ECHOES [·] [·] [·]"
 
 [node name="ObjectiveCard" type="PanelContainer" parent="HudRoot"]
 layout_mode = 0
@@ -223,5 +268,35 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.392157, 0.454902, 0.545098, 1)
 theme_override_font_sizes/font_size = 12
-text = "WASD Move   ·   E Interact   ·   R Reset Loop"
+text = "WASD Move   ·   E Interact   ·   R Reset Loop   ·   F1 Dev Info"
 horizontal_alignment = 1
+
+[node name="DevInspector" type="PanelContainer" parent="HudRoot"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -340.0
+offset_top = 70.0
+offset_right = -20.0
+offset_bottom = 220.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("DevInspectorStyle")
+
+[node name="VBox" type="VBoxContainer" parent="HudRoot/DevInspector"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="Label" parent="HudRoot/DevInspector/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.823529, 1.0, 1)
+theme_override_font_sizes/font_size = 11
+text = "DEV TRACK INSPECTOR [F1]"
+
+[node name="TrackSummary" type="Label" parent="HudRoot/DevInspector/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.972549, 0.980392, 0.988235, 1)
+theme_override_font_sizes/font_size = 12
+text = "Ready to record."
+autowrap_mode = 2
