@@ -1,7 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://Scripts/LevelContainer.cs" id="1_level"]
 [ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TestSwitch.tscn" id="4_switch"]
 
 [node name="TestRoom" type="Node2D"]
 script = ExtResource("1_level")
@@ -9,7 +11,17 @@ script = ExtResource("1_level")
 [node name="RoomGeometry" type="Node2D" parent="."]
 script = ExtResource("2_geometry")
 
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(400, 360)
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(640, 366)
+enabled = true
+
 [node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="TestSwitch" parent="PuzzleModules" instance=ExtResource("4_switch")]
+position = Vector2(850, 455)
 
 [node name="ResettableState" type="Node2D" parent="."]
 

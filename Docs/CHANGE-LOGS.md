@@ -19,3 +19,14 @@
 - Added a static high-contrast HUD for the room name and objective, plus an honest prototype note. No nonfunctional controls, timer, or echo count were added.
 - Design Read: first room shell for players, using the documented digital-drawing direction; ENERGY 2 / RHYTHM 1 / MOTION 1. The single centered room makes the test space the focal point, the HUD sits above it, and motion is omitted until it communicates gameplay.
 - Verification: `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors; the Godot 4.7.2 Mono editor initialized the project; the configured Main scene ran; a rendered frame showed the room and HUD with no clipping or missing resources. HUD text/background contrast measured 13.62:1 and 8.55:1; room trace/floor contrast measured 3.79:1.
+
+## Stage 1 interface refinement and Stage 2 — Movement and interaction foundation
+
+- Simplified the Stage 1 HUD to one short objective and a proximity-only interaction prompt. Removed the title, room-name label, and explanatory prototype note; retained the slate palette and blue signal accent from the existing art direction.
+- Attempted to retrieve the three requested Stitch screens through the provided MCP endpoint. The endpoint rejected the provided API key, so no Stitch images or code were downloaded or added to the project.
+- Added `Scenes/Characters/Greg.tscn` with a white outlined blob, facing eyes, four-directional WASD/arrow movement, and a physics collision shape. Movement runs in `_PhysicsProcess` at a configured speed.
+- Added room-edge collision shapes derived from the level's `RoomBounds`, plus a fixed room camera and a 1152×648 viewport.
+- Added `Scenes/Characters/Echo.tscn` as a translucent, outlined, non-colliding placeholder.
+- Added the `IInteractable` contract and a test switch with stable ID `test-switch`. Greg selects the nearest switch in range, displays its prompt, toggles it with E, and emits the stable target ID for a future recording system. The switch position and objective text both show whether it is active.
+- Verification: `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors. The Godot 4.7.2 Mono editor initialized the project, and Main launched without errors. A rendered frame confirmed the objective, room, Greg, and switch fit at 1152×648. HUD text contrast measured 13.74:1; the signal trace has 3.79:1 contrast against the room floor.
+- Axel's hands-on checks for wall blocking, switch use, movement speed, and interaction feel remain open; no feel adjustments have been made without that review.

@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/GregCharacter.cs" id="1_greg"]
+
+[sub_resource type="CircleShape2D" id="GregBody"]
+radius = 11.0
+
+[sub_resource type="CircleShape2D" id="InteractionRange"]
+radius = 52.0
+
+[node name="Echo" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_greg")
+IsEcho = true
+
+[node name="BodyCollision" type="CollisionShape2D" parent="."]
+disabled = true
+shape = SubResource("GregBody")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+monitoring = false
+monitorable = false
+collision_layer = 0
+collision_mask = 0
+
+[node name="Range" type="CollisionShape2D" parent="InteractionArea"]
+disabled = true
+shape = SubResource("InteractionRange")

@@ -23,7 +23,7 @@ public partial class LevelContainer : Node2D
     public int MaximumActiveEchoes { get; set; } = 3;
 
     [Export(PropertyHint.MultilineText)]
-    public string ObjectiveText { get; set; } = "Test room container is active.";
+    public string ObjectiveText { get; set; } = "Activate the switch.";
 
     [Export(PropertyHint.MultilineText)]
     public string CompletionCondition { get; set; } = string.Empty;
@@ -31,5 +31,6 @@ public partial class LevelContainer : Node2D
     public override void _Ready()
     {
         GetNode<RoomGeometry>("RoomGeometry").SetRoomLayout(RoomBounds, StartingPosition);
+        GetNode<GregCharacter>("Greg").Position = StartingPosition;
     }
 }

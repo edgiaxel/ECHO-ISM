@@ -34,6 +34,40 @@ public partial class RoomGeometry : Node2D
     {
         RoomBounds = bounds;
         StartingPosition = startPosition;
+        BuildRoomWalls();
         QueueRedraw();
+    }
+
+    private void BuildRoomWalls()
+    {
+        var walls = GetNodeOrNull<StaticBody2D>("RoomWalls");
+        if (walls is null)
+        {
+            walls = new StaticBody2D { Name = "RoomWalls", CollisionLayer = 1 };
+            AddChild(walls);
+        }
+
+        foreach (Node child in walls.GetChildren())
+        {
+            child.QueueFree();
+        }
+
+        const float thickness = 16f;
+        AddWall(walls, "North", new Vector2(RoomBounds.Size.X + thickness * 2f, thickness), new Vector2(RoomBounds.GetCenter().X, RoomBounds.Position.Y));
+        AddWall(walls, "South", new Vector2(RoomBounds.Size.X + thickness * 2f, thickness), new Vector2(RoomBounds.GetCenter().X, RoomBounds.End.Y));
+        AddWall(walls, "West", new Vector2(thickness, RoomBounds.Size.Y), new Vector2(RoomBounds.Position.X, RoomBounds.GetCenter().Y));
+        AddWall(walls, "East", new Vector2(thickness, RoomBounds.Size.Y), new Vector2(RoomBounds.End.X, RoomBounds.GetCenter().Y));
+    }
+
+    private static void AddWall(StaticBody2D parent, string name, Vector2 size, Vector2 position)
+    {
+        var shape = new RectangleShape2D { Size = size };
+        var collider = new CollisionShape2D
+        {
+            Name = name,
+            Shape = shape,
+            Position = position
+        };
+        parent.AddChild(collider);
     }
 }

@@ -64,29 +64,29 @@ Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, an
 ## Stage 2 — Greg movement and interaction foundation
 
 ### S2.1 Placeholder character
-- [ ] Create Greg using basic 2D shapes.
-- [ ] Add visible eyes or a clear facing indicator.
-- [ ] Add a simple outline and readable silhouette.
-- [ ] Create a distinct placeholder appearance for an echo.
+- [x] Create Greg using basic 2D shapes.
+- [x] Add visible eyes or a clear facing indicator.
+- [x] Add a simple outline and readable silhouette.
+- [x] Create a distinct placeholder appearance for an echo.
 
 ### S2.2 Movement
-- [ ] Implement four-directional movement.
-- [ ] Keep movement consistent across frame rates.
+- [x] Implement four-directional movement.
+- [x] Keep movement consistent across frame rates.
 - [ ] Prevent movement through ordinary solid walls.
-- [ ] Confirm the camera and character scale work in the test room.
-- [ ] Add basic movement feedback without polishing animation.
+- [x] Confirm the camera and character scale work in the test room.
+- [x] Add basic movement feedback without polishing animation.
 
 ### S2.3 Interaction contract
-- [ ] Define a common interaction interface or base component.
-- [ ] Add a context-sensitive interaction prompt.
-- [ ] Implement one simple test switch.
+- [x] Define a common interaction interface or base component.
+- [x] Add a context-sensitive interaction prompt.
+- [x] Implement one simple test switch.
 - [ ] Confirm the interaction works reliably near the object.
-- [ ] Ensure the same interaction can later be recorded and replayed.
+- [x] Ensure the same interaction can later be recorded and replayed.
 
 ### S2.4 Review iteration
 - [ ] Axel reviews movement speed, scale, and interaction feel.
 - [ ] Apply only the approved adjustments.
-- [ ] Run the project after changes.
+- [x] Run the project after changes.
 
 **Exit criteria:** Greg can move around the room and activate one interactive object.
 
