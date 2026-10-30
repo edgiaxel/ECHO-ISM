@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Door.cs" id="1_door"]
+
+[sub_resource type="RectangleShape2D" id="DoorCollision"]
+size = Vector2(16, 88)
+
+[node name="Door" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_door")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("DoorCollision")
+
+[node name="OpenParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 14
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.8
+emission_shape = 3
+emission_rect_extents = Vector2(6, 40)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 25.0
+initial_velocity_max = 50.0
+scale_amount_min = 2.0
+scale_amount_max = 3.5
+color = Color(0.062745, 0.72549, 0.505882, 1)

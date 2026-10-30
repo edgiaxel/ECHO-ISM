@@ -18,6 +18,9 @@ public partial class GameManager : Node2D
     private Label _objective = null!;
     private Control _devInspector = null!;
     private Label _trackSummary = null!;
+    private RoomCamera _camera = null!;
+    private Door _door = null!;
+    private ExitGoal _exitGoal = null!;
 
     public override void _Ready()
     {
@@ -47,11 +50,33 @@ public partial class GameManager : Node2D
 
         _objective.Text = definition.ObjectiveText;
 
-        var testSwitch = _level.GetNode<TestSwitch>("PuzzleModules/TestSwitch");
-        testSwitch.StateChanged += active =>
+        _camera = _level.GetNodeOrNull<RoomCamera>("RoomCamera");
+        _door = _level.GetNodeOrNull<Door>("PuzzleModules/Door");
+        _exitGoal = _level.GetNodeOrNull<ExitGoal>("PuzzleModules/ExitGoal");
+
+        var testSwitch = _level.GetNodeOrNull<TestSwitch>("PuzzleModules/TestSwitch");
+        if (testSwitch is not null)
         {
-            _objective.Text = active ? "Switch M01 active. Circuit restored." : definition.ObjectiveText;
-        };
+            testSwitch.StateChanged += active =>
+            {
+                if (_door is not null)
+                {
+                    _door.SetOpen(active);
+                }
+                _camera?.Shake(active ? 3.0f : 1.5f, 0.15f);
+                _objective.Text = active ? "Door opened. Reach the exit terminal." : definition.ObjectiveText;
+            };
+        }
+
+        if (_exitGoal is not null)
+        {
+            _exitGoal.Completed += () =>
+            {
+                _loopController.CompleteLevel();
+                _camera?.Shake(5.0f, 0.4f);
+                _objective.Text = "SECTOR 01 RESTORED: Exit terminal reached!";
+            };
+        }
 
         var greg = _level.GetNode<GregCharacter>("Greg");
         var promptPanel = GetNode<Control>("BasicHud/HudRoot/PromptPanel");
@@ -113,6 +138,7 @@ public partial class GameManager : Node2D
     private void OnLoopReset()
     {
         _objective.Text = _level.ObjectiveText;
+        _camera?.Shake(2.0f, 0.12f);
         UpdateLoopHeader();
     }
 
@@ -134,3 +160,4 @@ public partial class GameManager : Node2D
         _echoPoolLabel.Text = $"ECHOES [{string.Join("] [", slots)}]";
     }
 }
+

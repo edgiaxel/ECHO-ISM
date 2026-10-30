@@ -152,23 +152,23 @@ Add a limit if a test takes longer than expected, kill it and just skip it and f
 ## Stage 5 — First complete puzzle
 
 ### S5.1 Build the teaching room
-- [ ] Add a switch and a door.
-- [ ] Require the switch to remain active while Greg traverses the door.
-- [ ] Make the switch echo-compatible.
-- [ ] Add a clear objective and completion state.
-- [ ] Ensure the room cannot be completed by simply walking through in one loop.
+- [x] Add a switch and a door.
+- [x] Require the switch to remain active while Greg traverses the door.
+- [x] Make the switch echo-compatible.
+- [x] Add a clear objective and completion state.
+- [x] Ensure the room cannot be completed by simply walking through in one loop.
 
 ### S5.2 Validate the puzzle
-- [ ] Complete the room using one echo.
-- [ ] Retry after a deliberately failed attempt.
-- [ ] Confirm the failure teaches the necessary timing or route.
-- [ ] Check that the puzzle is not dependent on frame-perfect movement.
-- [ ] Confirm the solution is understandable without a long tutorial.
+- [x] Complete the room using one echo.
+- [x] Retry after a deliberately failed attempt.
+- [x] Confirm the failure teaches the necessary timing or route.
+- [x] Check that the puzzle is not dependent on frame-perfect movement.
+- [x] Confirm the solution is understandable without a long tutorial.
 
 ### S5.3 Review iteration
 - [ ] Axel reviews the puzzle's fun, clarity, and pacing.
 - [ ] Adjust only after feedback.
-- [ ] Keep a known-good version of the room.
+- [x] Keep a known-good version of the room.
 
 **Exit criteria:** The central mechanic is necessary, understandable, and satisfying in at least one complete puzzle.
 

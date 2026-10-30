@@ -14,7 +14,7 @@ public partial class LevelContainer : Node2D
     public Rect2 RoomBounds { get; set; } = new(240, 166, 800, 400);
 
     [Export]
-    public Vector2 StartingPosition { get; set; } = new(400, 360);
+    public Vector2 StartingPosition { get; set; } = new(360, 366);
 
     [Export(PropertyHint.Range, "1,120,1")]
     public float LoopDurationSeconds { get; set; } = 15;
@@ -23,10 +23,10 @@ public partial class LevelContainer : Node2D
     public int MaximumActiveEchoes { get; set; } = 3;
 
     [Export(PropertyHint.MultilineText)]
-    public string ObjectiveText { get; set; } = "Activate the switch.";
+    public string ObjectiveText { get; set; } = "Coordinate with Echo to open Door M02 and reach Exit Node.";
 
     [Export(PropertyHint.MultilineText)]
-    public string CompletionCondition { get; set; } = string.Empty;
+    public string CompletionCondition { get; set; } = "Reach Exit Node while Door M02 is unlocked.";
 
     public override void _Ready()
     {

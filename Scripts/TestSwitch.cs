@@ -15,6 +15,8 @@ public partial class TestSwitch : Area2D, IInteractable, IResettable
 
     public event Action<bool> StateChanged;
 
+    private CpuParticles2D _particles;
+
     private static readonly Color BodyColor = new("#0E1626");
     private static readonly Color EdgeColorInactive = new("#334155");
     private static readonly Color EdgeColorActive = new("#00D2FF");
@@ -22,6 +24,11 @@ public partial class TestSwitch : Area2D, IInteractable, IResettable
     private static readonly Color SignalActive = new("#10B981");
     private static readonly Color CoreInactive = new("#F59E0B");
     private static readonly Color CoreActive = new("#10B981");
+
+    public override void _Ready()
+    {
+        _particles = GetNodeOrNull<CpuParticles2D>("ActiveParticles");
+    }
 
     public string GetPrompt(GregCharacter actor) => IsActive ? "Deactivate switch" : "Activate switch";
 
@@ -33,6 +40,13 @@ public partial class TestSwitch : Area2D, IInteractable, IResettable
         }
 
         IsActive = !IsActive;
+
+        if (IsActive && _particles is not null)
+        {
+            _particles.Restart();
+            _particles.Emitting = true;
+        }
+
         QueueRedraw();
         StateChanged?.Invoke(IsActive);
         return true;

@@ -93,3 +93,38 @@
   - `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors.
   - Executed automated validation suite verifying first echo spawning, movement timeline playback, interaction replay, translucent appearance, ghost collision, mechanism compatibility filter, dual/triple echo synchronization, oldest-echo replacement policy, safe missing-target handling, and overlapping echo stability.
   - Recorded in-engine frame at `/tmp/echo-ism-stage400000000.png`.
+
+
+## Stage 5: First complete puzzle
+
+- Built teaching room puzzle layout in `Scenes/Levels/TestRoom.tscn` adhering to the Stitch Dual-Wing Blueprint:
+  - Central dividing walls (`DividerNorth`, `DividerSouth`) splitting the room into West and East wings with a central aperture at (640, 366).
+  - Three tactical obstacle pillars (`PillarWest`, `PillarEastNorth`, `PillarEastSouth`) providing collision routing and navigation challenges.
+  - High-contrast circuit traces connecting TestSwitch (440, 470) to Door (640, 366) and Door to Exit Terminal (920, 366).
+- Implemented `Door` module (`Scripts/Door.cs`, `Scenes/Modules/Door.tscn`):
+  - Bulkhead obstacle with solid `StaticBody2D` collision when closed, blocking Greg and echoes.
+  - State-driven activation: opening disables the solid collider, activates emerald energy dissolve particles (`CPUParticles2D`), and redraws to energy pass-through graphics.
+  - Implements `IResettable` to reset to closed and solid state on loop reset.
+- Implemented `ExitGoal` module (`Scripts/ExitGoal.cs`, `Scenes/Modules/ExitGoal.tscn`):
+  - Exit terminal at (920, 366) with verification pedestal, glowing concentric boundary, and detection area.
+  - Fires `Completed` signal upon Greg arrival, emitting celebratory emerald burst particles and marking loop state as `Completed`.
+- Configured solid physical collision between Greg and past echoes:
+  - Updated `EchoActor` (`Scripts/EchoActor.cs`) and `Echo.tscn` with `CollisionLayer = 1` and `CollisionMask = 1`.
+  - Greg and his past echoes physically collide and push against each other, requiring intentional path routing.
+- Enhanced effect juice across puzzle interactions:
+  - Added `RoomCamera` (`Scripts/RoomCamera.cs`) with damped shake decay: subtle impact shake on switch toggle (3.0px), loop reset shake (2.0px), and victory rumble on exit terminal completion (5.0px).
+  - Added explosive one-shot `CPUParticles2D` particle bursts on switch activation (cyan), door open (emerald), and level exit goal completion (emerald).
+- Connected gameplay loop in `GameManager.cs`:
+  - Switch state change toggles door open/closed, triggers camera shake, and updates dynamic HUD objective text.
+  - Reaching the exit terminal transitions loop state to `Completed` and notifies the player.
+- Verification:
+  - `dotnet build ECHO-ISM.sln` succeeded with 0 warnings and 0 errors.
+  - Executed automated validation suite verifying:
+    1. Initial puzzle state: door closed and solid, switch inactive, goal unreached.
+    2. Closed door and room divider walls physically block Greg from reaching the exit in one loop.
+    3. Switch activation opens door, disables door collider, and triggers effect particles and camera shake.
+    4. Loop reset safely restores switch and door to closed and solid state, maintaining echo pool.
+    5. Physical collision verification between Live Greg and past echo.
+    6. Complete puzzle solve using Echo 1 to hold switch while Live Greg traverses the opened door to complete the level.
+    7. Hard execution timeout watchdog ensuring zero hangs or stalled test processes.
+  - Captured in-engine screenshot of Stage 5 puzzle layout to `echo-ism-stage5.png`.

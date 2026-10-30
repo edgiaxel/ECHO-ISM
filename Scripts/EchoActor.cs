@@ -12,13 +12,20 @@ public partial class EchoActor : GregCharacter
 
     private int _nextInteractionIndex;
     private Label _romanTag;
+    private CollisionShape2D _bodyCollider;
 
     public override void _Ready()
     {
         base._Ready();
         IsEcho = true;
-        CollisionLayer = 0;
-        CollisionMask = 0;
+        CollisionLayer = 1;
+        CollisionMask = 1;
+
+        _bodyCollider = GetNodeOrNull<CollisionShape2D>("BodyCollision");
+        if (_bodyCollider is not null)
+        {
+            _bodyCollider.Disabled = false;
+        }
 
         _romanTag = GetNodeOrNull<Label>("RomanTag");
         if (_romanTag is not null)
@@ -33,8 +40,13 @@ public partial class EchoActor : GregCharacter
         EchoIndex = echoIndex;
         EchoLabel = romanLabel;
         IsEcho = true;
-        CollisionLayer = 0;
-        CollisionMask = 0;
+        CollisionLayer = 1;
+        CollisionMask = 1;
+
+        if (_bodyCollider is not null)
+        {
+            _bodyCollider.Disabled = false;
+        }
 
         if (_romanTag is not null)
         {

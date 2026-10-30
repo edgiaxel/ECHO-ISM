@@ -13,3 +13,17 @@ StableId = "test-switch"
 
 [node name="InteractionShape" type="CollisionShape2D" parent="."]
 shape = SubResource("SwitchRange")
+
+[node name="ActiveParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 16
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.8
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 25.0
+initial_velocity_max = 55.0
+scale_amount_min = 2.0
+scale_amount_max = 3.5
+color = Color(0.0, 0.823529, 1.0, 1)
