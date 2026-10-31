@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Levels/Sector01BrokenCrossing.cs" id="1_sec01"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geom"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_cam"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/PressurePlate.tscn" id="5_plate"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="6_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TestSwitch.tscn" id="7_switch"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/NpcCharacter.tscn" id="8_npc"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="9_term"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="10_exit"]
+
+[node name="Sector01BrokenCrossing" type="Node2D"]
+script = ExtResource("1_sec01")
+LevelId = "sector-01-broken-crossing"
+DisplayName = "The Broken Crossing"
+RoomBounds = Rect2(0, 0, 700, 360)
+StartingPosition = Vector2(60, 200)
+LoopDurationSeconds = 18.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Use an Echo on the plate to hold the gate, restore bridge power, and meet Pip."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geom")
+Width = 700.0
+Height = 360.0
+RoomBounds = Rect2(0, 0, 700, 360)
+StartingPosition = Vector2(60, 200)
+PartitionWalls = [Rect2(192, 0, 16, 156), Rect2(192, 244, 16, 116), Rect2(332, 0, 16, 156), Rect2(332, 244, 16, 116)]
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(350, 180)
+enabled = true
+script = ExtResource("4_cam")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(60, 200)
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="GatePlate" parent="PuzzleModules" instance=ExtResource("5_plate")]
+position = Vector2(110, 100)
+ModuleId = "gate-plate-01"
+
+[node name="SecurityDoor" parent="PuzzleModules" instance=ExtResource("6_door")]
+position = Vector2(200, 200)
+DoorSize = Vector2(16, 64)
+
+[node name="BridgeSwitch" parent="PuzzleModules" instance=ExtResource("7_switch")]
+position = Vector2(260, 100)
+StableId = "bridge-switch-01"
+
+[node name="BridgeBarrier" parent="PuzzleModules" instance=ExtResource("6_door")]
+position = Vector2(340, 200)
+DoorSize = Vector2(16, 64)
+
+[node name="PipNpc" parent="PuzzleModules" instance=ExtResource("8_npc")]
+position = Vector2(480, 200)
+StableId = "npc-pip"
+CharacterType = 0
+CharacterName = "Pip"
+RoleTitle = "Courier Blob"
+
+[node name="BroadcastTerminal" parent="PuzzleModules" instance=ExtResource("9_term")]
+position = Vector2(580, 120)
+StableId = "terminal-broadcast-frag"
+TerminalTitle = "DAMAGED BROADCAST RELAY"
+MessageHeader = "BROADCAST EXCERPT"
+MessageBody = "[DISTORTED] Central network shutdown imminent. Districts must isolate and sever inter-connections immediately..."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC01_LOST_TRANSMISSION"
+FragmentTitle = "Lost Transmission"
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("10_exit")]
+position = Vector2(640, 200)

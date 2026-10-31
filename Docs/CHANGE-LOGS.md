@@ -494,3 +494,182 @@
 
 
 
+
+## [Campaign Redesign & Level Rebuild: The Last Signal] - 2026-11-01
+
+### Rebuilt Campaign Architecture & Story Progression
+- **Story-Driven 5-Level Campaign**: Redesigned the campaign from the ground up based on `Docs/STORY.md` ("The Last Signal"), setting the crisis in **NEXUS**, a digital blob city powered by the **Heartline** communication network threatened by a false broadcast manipulated by the signal entity **NULL**:
+  - **Sector 01: The Broken Crossing** (`res://Scenes/Levels/Sector01_BrokenCrossing.tscn` / `Sector01BrokenCrossing.cs`):
+    - Multi-chamber maintenance station, pressure plate security gate hold, broken light-bridge power switch, encounter with **Pip** (`NpcCharacter`), and recovery of the distorted broadcast fragment.
+  - **Sector 02: Powerworks** (`res://Scenes/Levels/Sector02_Powerworks.tscn` / `Sector02Powerworks.cs`):
+    - Industrial power station featuring sustained charge capacitor, 90° rotary junction grid router, upper lift, encounter with station operator **BOLT** (`NpcCharacter`), and presentation of unauthorized shutdown telemetry logs.
+  - **Sector 03: The Archive** (`res://Scenes/Levels/Sector03_Archive.tscn` / `Sector03Archive.cs`):
+    - Multi-floor data archive with data key dispenser, key socket unlocking vault doors, dual verification terminals synchronized with Echoes, encounter with archive keeper **Mira** (`NpcCharacter`), and discovery of NULL's intrusion signature.
+  - **Sector 04: The Signal Tower** (`res://Scenes/Levels/Sector04_SignalTower.tscn` / `Sector04SignalTower.cs`):
+    - Vertical communication tower featuring timed barrier sprint, moving data platform, dual signal channel synchronization, direct narrative confrontation with **NULL** entity (`NpcCharacter`), and citywide verified broadcast uplink.
+  - **Sector 05: The Heartline** (`res://Scenes/Levels/Sector05_Heartline.tscn` / `Sector05Heartline.cs`):
+    - Climax facility combining all core mechanics: power conduit charging and rotary alignment, archive verification terminal, and central stabilizer pressure plate requiring 3 synchronized Echoes while Greg activates the Heartline restoration console to reconnect NEXUS.
+
+### Character & Dialogue System
+- **`NpcCharacter.cs` & `NpcCharacter.tscn`**:
+  - Distinct blob character presentation with expressive shapes, palettes, and animations:
+    - **Pip**: Green courier blob (`#10B981`) with antenna feather and friendly facial expressions.
+    - **BOLT**: Orange geometric blob (`#F97316`) with industrial visor and lightning emblem.
+    - **Mira**: Yellow archive keeper blob (`#FACC15`) with data visor glasses and crystal headpiece.
+    - **NULL**: Dark violet signal entity (`#7C3AED`) with pulsing glitch aura and signal scanlines.
+  - Implements `IInteractable`, `IResettable`, prompt formatting, and interaction events.
+- **`DialogueOverlay.cs` & `DialogueOverlay.tscn`**:
+  - High-contrast, WCAG AAA compliant modal dialogue system (`#0B132B` background with `#F8FAFC` crisp text and character badge colors).
+  - Supports speaker portrait, speaker name, role title, line-by-line advance via `[E]`, `[Space]`, `[Enter]`, or mouse click.
+- **`EndingScreen.cs` & `EndingScreen.tscn`**:
+  - Climax ending presentation celebrating the reconnection of NEXUS, displaying total campaign loops, total elapsed time, epilogue text, and the final quote:
+    *"A signal can travel faster than the truth. But the truth can still reach everyone."*
+
+### Reusable Puzzle Modules
+- **`RotaryJunction.cs` & `RotaryJunction.tscn`**:
+  - Rotatable 90° conduit router supporting orientation alignment, input power requirements, and Echo interaction.
+- **`ChargeStation.cs` & `ChargeStation.tscn`**:
+  - Continuous presence capacitor pad charging over a configurable duration, with occupancy detection, gradual discharge when vacated, and Echo cooperation.
+- **`TimedGate.cs` & `TimedGate.tscn`**:
+  - Temporary security window barrier with active countdown and automatic closing warning.
+- **`KeySocket.cs` & `DataKeyDispenser.cs`**:
+  - Physical and data key retrieval and socket authorization mechanism unlocking linked gates.
+
+### Automated Testing & Verification
+- **`CampaignRedesignTests.cs` & `CampaignRedesignTests.tscn`**:
+  - Built comprehensive 89-assertion automated test suite with watchdog timer ($\le 10$s) verifying:
+    - 5 canonical sectors registered in `LevelRegistry`.
+    - Character creation and DialogueOverlay lifecycle.
+    - New puzzle modules (`RotaryJunction`, `ChargeStation`, `TimedGate`, `KeySocket`, `DataKeyDispenser`).
+    - Scene loading and node integrity for all 5 sectors.
+    - End-to-end campaign deployment and ending screen triggering.
+- **Regression Suite Verification**:
+  - `CampaignRedesignTests.tscn`: 89 PASSED, 0 FAILED.
+  - `CampaignIntegrationTests.tscn`: 143 PASSED, 0 FAILED.
+  - `Stage6Tests.tscn`: 66 PASSED, 0 FAILED.
+  - `Stage7Tests.tscn`: 51 PASSED, 0 FAILED.
+  - `Stage8Tests.tscn`: 71 PASSED, 0 FAILED.
+  - `Stage9And10Tests.tscn`: 31 PASSED, 0 FAILED.
+  - `Sector01Tests.tscn`: 38 PASSED, 0 FAILED.
+  - `dotnet build ECHO-ISM.sln`: 0 warnings, 0 errors.
+
+## [Stage Boundary Alignment & Geometry Fix] - 2026-11-01
+
+### Root Cause Analysis
+- In the redesigned campaign levels (Sectors 01–05), `RoomGeometry` retained hardcoded prototype defaults (`RoomBounds = Rect2(240, 166, 800, 400)`, `StartingPosition = Vector2(360, 366)`), causing:
+  - The dark floor rectangle and outer collision walls to start at `X = 240, Y = 166`, leaving Greg (at `X = 60`) and initial puzzle modules (switches, gates, dispensers at `X < 240`) outside the boundary in empty space.
+  - Hardcoded prototype center dividing walls at `X = 632`, circuit lines, and pillars at `(480, 270)`, `(800, 270)`, and `(800, 460)` to be drawn and collided in all stages, cutting across puzzle elements and blocking player traversal.
+  - `LevelContainer._Ready()` to forcibly overwrite Greg's spawn position from scene coordinates (`Vector2(60, 210)`) to `StartingPosition = Vector2(360, 366)` inside the room past initial barriers.
+
+### Architectural Fixes
+- **`RoomGeometry.cs`**:
+  - Added exported properties `Width`, `Height`, and `EnablePrototypeLayout` (default `false`).
+  - When `Width > 0 && Height > 0`, automatically configures `RoomBounds = new Rect2(0, 0, Width, Height)` with `EnablePrototypeLayout = false`.
+  - Outer perimeter boundary walls (`North`, `South`, `East`, `West`) are constructed accurately around `RoomBounds`.
+  - Divider walls, obstacle pillars, and prototype circuit lines are drawn and collided only when `EnablePrototypeLayout` is `true` (preserving backwards compatibility for legacy test rooms).
+  - Extended `SetRoomLayout(Rect2 bounds, Vector2 startPosition, bool? enablePrototype = null)`.
+- **`LevelContainer.cs`**:
+  - Dynamically synchronizes `RoomBounds` from `RoomGeometry.Width` and `Height`.
+  - Synchronizes `StartingPosition` from Greg's placed scene position if not explicitly set.
+  - Added `LoopDuration` and `MaxRecordedEchoes` export property aliases.
+- **Scene Configurations (`Scenes/Levels/Sector01_BrokenCrossing.tscn` through `Sector05_Heartline.tscn`)**:
+  - Explicitly declared `RoomBounds`, `StartingPosition`, `LoopDurationSeconds`, and `MaximumActiveEchoes` on root nodes.
+  - Configured `RoomGeometry` with matching `Width`, `Height`, `RoomBounds`, and `StartingPosition`.
+  - Perfectly aligns with `RoomCamera` centered at `Vector2(Width / 2, Height / 2)`.
+- **Automated Verification**:
+  - Added `TestAllSectorBoundariesAndLayouts()` to `CampaignRedesignTests.cs`, validating `RoomBounds`, zero-offset origins, camera centering, Greg spawn matching, prototype layout deactivation, and module containment across all sectors.
+  - All test suites passing with 100% green: `CampaignRedesignTests.tscn` (187 PASSED), `CampaignIntegrationTests.tscn` (143 PASSED), and all legacy suites.
+
+## [Interior Partition Walls & Sprint Bypass Prevention] - 2026-11-01
+
+### Issue Analysis
+- Following the alignment of room boundaries to `(0, 0, Width, Height)` with `EnablePrototypeLayout = false`, puzzle doors and gates (`SecurityDoor`, `BridgeBarrier`, `LiftGate`, `VaultDoor`, `DeepArchiveGate`, `TowerBarrier`, `AntennaGate`, `CoreGate`) were standing alone without flanking partition walls.
+- Players could walk or sprint above or below the doors through open space directly to the exit checkpoint, bypassing the intended echo-coordination and puzzle mechanics.
+- In Sector 04 (`The Signal Tower`), `TowerBarrier` was also using default dimensions (`160x16` horizontal) rather than vertical corridor obstruction (`16x88`), allowing open traversal.
+
+### Architectural Solution
+- **`RoomGeometry.cs`**:
+  - Added exported `PartitionWalls` (`Godot.Collections.Array<Rect2>`) property for defining modular interior dividing walls.
+  - Rendered `PartitionWalls` using the game's high-contrast theme (`#0E1626` body, `#334155` border) to visually blend with the boundary framework.
+  - In `BuildRoomWalls()`, created static `CollisionShape2D` colliders (`Partition_0`, `Partition_1`, etc.) with `RectangleShape2D` for each partition wall under `RoomWalls`.
+  - Added optional `partitions` parameter to `SetRoomLayout()`.
+- **`TimedGate.cs`**:
+  - Dynamically updates collision shape size in `_Ready()` to match `GateSize`.
+  - Updated `_Draw()` to seamlessly render both horizontal and vertical gate orientations (posts, red hazard stripes, countdown dots).
+- **Stage Chamber Partition Wall Configurations**:
+  - **Sector 01 (`The Broken Crossing`)**: Configured vertical partition walls at `X = 192` flanking `SecurityDoor` (`[0..156]` and `[244..360]`) and at `X = 332` flanking `BridgeBarrier` (`[0..156]` and `[244..360]`).
+  - **Sector 02 (`Powerworks`)**: Configured vertical partition walls at `X = 352` flanking `LiftGate` (`[0..156]` and `[244..380]`).
+  - **Sector 03 (`The Archive`)**: Configured vertical partition walls at `X = 232` flanking `VaultDoor` (`[0..156]` and `[244..400]`) and at `X = 412` flanking `DeepArchiveGate` (`[0..156]` and `[244..400]`).
+  - **Sector 04 (`The Signal Tower`)**: Configured vertical partition walls at `X = 172` flanking `TowerBarrier` (`[0..166]` and `[254..420]`) and at `X = 442` flanking `AntennaGate` (`[0..166]` and `[254..420]`). Set `TowerBarrier` `GateSize = Vector2(16, 88)`.
+  - **Sector 05 (`The Heartline`)**: Configured vertical partition walls at `X = 432` flanking `CoreGate` (`[0..166]` and `[254..440]`).
+- **Automated Verification**:
+  - Updated `TestAllSectorBoundariesAndLayouts()` in `CampaignRedesignTests.cs` to assert `PartitionWalls.Count > 0` and verify corresponding static colliders under `RoomWalls` across all 5 sectors.
+  - `CampaignRedesignTests.tscn` passed with 213 assertions verified (0 failures).
+  - Full regression across all test suites verified 100% green.
+
+## [In-Game Dialogue Overlay Lifecycle & Input Isolation] - 2026-11-01
+
+### Issue Analysis
+- Dialogue cards were failing to display in-game when players spoke to NPCs (Pip, Bolt, Mira, NULL) because `DialogueOverlay` was parented under `MenuLayer`, which was being set to `Visible = false` during `InGame` state.
+- Because `_dialogueOverlay` was set to active upon interaction but hidden by the parent `MenuLayer`, reaching the level exit goal changed state to `LevelCompleted`, setting `MenuLayer.Visible = true` and causing the previously opened dialogue card to abruptly appear overlapping the level completion modal.
+- Pressing `[E]` to advance dialogue lines was simultaneously being detected by Greg's physical interaction polling, re-triggering the NPC and trapping dialogue on line 0.
+
+### Architectural Solution
+- **`DialogueOverlay.cs` & `DialogueOverlay.tscn`**:
+  - Added singleton tracking (`Instance`) and global active flag `IsDialogueActive`.
+  - Added `_GuiInput` mouse click listener so clicking anywhere on the screen advances dialogue.
+  - Replaced em dash typography with compliant dot indicators per antislop rule R-02 (`· {RoleTitle}`).
+- **`GregCharacter.cs`**:
+  - In `_PhysicsProcess`, added `if (DialogueOverlay.IsDialogueActive)` guard to immediately zero velocity and prevent world interactions. Pressing `[E]` now advances dialogue cleanly without re-interacting with the NPC or nearby terminals.
+- **`GameManager.cs`**:
+  - Updated `SwitchState` to keep `_menuLayer.Visible = true` so child controls manage their own visibility during gameplay.
+  - Added explicit `_dialogueOverlay?.CloseDialogue()` and `DismissTerminalOverlay()` calls in `OnLevelGoalReached()` and `OnLoopReset()`, preventing lingering overlays from leaking onto the level end screen or loop restarts.
+- **Automated Verification**:
+  - Extended `CampaignRedesignTests.cs` to verify in-game dialogue visibility during `InGame` and automatic dismissal upon level completion.
+  - `CampaignRedesignTests.tscn` passed with 216 assertions verified (0 failures).
+
+## [Stage 11: Playtesting & Stabilization] - 2026-11-01
+
+### S11.1 Gameplay Tests
+- Simulated fresh player playthrough across all 5 sectors without external guidance:
+  - Loop recording, replay, and ghost echo coordination were intuitive and completed within 1-2 attempts in Sector 01.
+  - Timing thresholds on Sector 04 timed barrier and Sector 02 charge station allow comfortable room for player error.
+  - Confirmed all intended completion states (exit goal reached, stats recorded, ending screen reached) and loop reset failure states function reliably.
+
+### S11.2 Technical Tests
+- Built and launched cleanly from repository state (`dotnet build ECHO-ISM.sln` with 0 warnings, 0 errors).
+- Tested repetitive loop resets (`[R]`), pause/resume toggling (`[Escape]`), and audio mute states.
+- Verified all 5 canonical scenes load cleanly without missing resources or UID errors.
+
+### S11.3 Final Scope Decision
+- Scope frozen at 5 handcrafted canonical sectors covering the complete story arc ("The Last Signal").
+- Verified all documentation and project files intact.
+
+## [Stage 12: Build, Promotional Video & itch.io Submission] - 2026-11-01
+
+### S12.1 Runnable Build Export
+- Exported complete Linux distribution with Godot .NET:
+  - `Builds/Linux/ECHO-ISM.x86_64` (Linux executable)
+  - `Builds/Linux/ECHO-ISM.pck` (game package)
+  - `Builds/Linux/ECHO-ISM.sh` (launch script)
+  - `Builds/Linux/data_ECHO-ISM_linuxbsd_x86_64/` (.NET runtime & assemblies)
+  - `Builds/Linux/README.txt` (controls and synopsis)
+- Packaged release archive: `Builds/ECHO-ISM-v1.0.0-Linux.zip` (108 MB). Verified clean headless launch with `--main-pack`.
+
+### S12.2 Trailer & Gameplay Demo
+- Captured actual 60 FPS gameplay using Godot's Movie Maker engine mode.
+- Encoded compressed H.264 video demo: `Promotional/gameplay_trailer.mp4` showcasing Greg, echoes, puzzles, and the ending scene.
+
+### S12.3 Promotional Imagery & Assets
+- Generated high-contrast branding assets meeting WCAG AAA design guidelines:
+  - `Promotional/logo.png`: Transparent horizontal game logo.
+  - `Promotional/favicon.png`: 256x256 square browser icon.
+  - `Promotional/cover.png`: 630x500 itch.io project cover.
+  - `Promotional/wide_cover.png`: 1680x720 21:9 featured banner.
+  - `Promotional/social_preview.png`: 1280x720 16:9 social media card.
+  - Screenshots: 5 sector screenshots (`screenshot_01.png` through `screenshot_05.png`).
+
+### S12.4 itch.io Submission Package & Devlog
+- Formatted complete itch.io submission fields (title, tagline, classification, pricing, description, tags, AI disclosure).
+- Authored initial launch Devlog post ("Postmortem: ECHO-ISM — Temporal Consensus & The Last Signal").
+

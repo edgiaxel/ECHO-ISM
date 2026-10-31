@@ -26,99 +26,71 @@ public static class LevelRegistry
         {
             LevelIndex = 0,
             SectorCode = "SECTOR 01",
-            DisplayName = "Boot Circuit",
-            NarrativeChapter = "The First Distortion",
-            MechanicDescription = "Switches, doors, and facility navigation",
-            DebriefText = "Communication link restored. Public notice warns citizens to disregard previous warnings, indicating early network distortion.",
-            EfficientLoopThreshold = 1,
+            DisplayName = "The Broken Crossing",
+            NarrativeChapter = "Boot Sequence",
+            MechanicDescription = "Pressure plate gate hold, bridge power activation, and Pip encounter",
+            DebriefText = "Crossing repaired. Pip confirms the emergency broadcast instructed residents to isolate districts, fabricating a crisis.",
+            EfficientLoopThreshold = 2,
             OptionalFragmentId = "FRAG_SEC01_LOST_TRANSMISSION",
             OptionalFragmentTitle = "Lost Transmission",
-            ScenePath = "res://Scenes/Levels/TestRoom.tscn",
-            Parameters = LevelVariationParameters.CreateHandcrafted("DualWing", 15f, 3)
+            ScenePath = "res://Scenes/Levels/Sector01_BrokenCrossing.tscn",
+            Parameters = LevelVariationParameters.CreateHandcrafted("BrokenCrossing", 18f, 3)
         },
         new LevelInfo
         {
             LevelIndex = 1,
             SectorCode = "SECTOR 02",
-            DisplayName = "False Synchrony",
-            NarrativeChapter = "Conflicting Signals",
-            MechanicDescription = "Timing slider calibration and pressure plate synchronization",
-            DebriefText = "Both channels synchronized. Discrepant timestamps confirm that simultaneous reports were fabricated from different events.",
+            DisplayName = "Powerworks",
+            NarrativeChapter = "The Rotating Grid",
+            MechanicDescription = "Capacitor charging, rotary junction routing, and BOLT encounter",
+            DebriefText = "Power station re-engaged. Telemetry proves the shutdown command was spoofed from an outside source.",
             EfficientLoopThreshold = 2,
             OptionalFragmentId = "FRAG_SEC02_SIGNAL_ANALYST",
             OptionalFragmentTitle = "Signal Analyst",
-            ScenePath = "res://Scenes/Levels/TimingRoom.tscn",
-            Parameters = LevelVariationParameters.CreateHandcrafted("TimingHub", 15f, 3)
+            ScenePath = "res://Scenes/Levels/Sector02_Powerworks.tscn",
+            Parameters = LevelVariationParameters.CreateHandcrafted("PowerworksGrid", 18f, 3)
         },
         new LevelInfo
         {
             LevelIndex = 2,
             SectorCode = "SECTOR 03",
-            DisplayName = "Divided Consensus",
-            NarrativeChapter = "A Society Splits",
-            MechanicDescription = "Cooperation across divided districts with past Echoes",
-            DebriefText = "Inter-district transit unlocked. Records reveal both districts originally requested communication, not separation.",
+            DisplayName = "The Archive",
+            NarrativeChapter = "Truth Protocol",
+            MechanicDescription = "Data key authorization, dual terminal verification, and Mira encounter",
+            DebriefText = "Deep archive unsealed. The original announcement confirms districts were never ordered to isolate. NULL signature identified.",
             EfficientLoopThreshold = 2,
             OptionalFragmentId = "FRAG_SEC03_MEDIATOR_RECORD",
             OptionalFragmentTitle = "The Mediator's Record",
-            ScenePath = "res://Scenes/Levels/DualProtocolRoom.tscn",
-            Parameters = LevelVariationParameters.CreateHandcrafted("DualChamber", 16f, 3)
+            ScenePath = "res://Scenes/Levels/Sector03_Archive.tscn",
+            Parameters = LevelVariationParameters.CreateHandcrafted("ArchiveTruth", 20f, 3)
         },
         new LevelInfo
         {
             LevelIndex = 3,
             SectorCode = "SECTOR 04",
-            DisplayName = "The Echo Chamber",
-            NarrativeChapter = "Repeating the Past",
-            MechanicDescription = "Echo resonance sensor and delayed signal relay routing",
-            DebriefText = "Relay facility synchronized. Corrupted archives reveal how duplicated messages systematically lost their qualifying context.",
-            EfficientLoopThreshold = 3,
+            DisplayName = "The Signal Tower",
+            NarrativeChapter = "The False Broadcast",
+            MechanicDescription = "Timed gate sprint, multi-channel relays, and NULL confrontation",
+            DebriefText = "Signal Tower online. Verified broadcast beamed across the city. NULL attempts to collapse the Heartline in response.",
+            EfficientLoopThreshold = 2,
             OptionalFragmentId = "FRAG_SEC04_ORIGINAL_SOURCE",
             OptionalFragmentTitle = "Original Source",
-            ScenePath = "res://Scenes/Levels/RelaySyncRoom.tscn",
-            Parameters = LevelVariationParameters.CreateHandcrafted("RelayGrid", 18f, 3)
+            ScenePath = "res://Scenes/Levels/Sector04_SignalTower.tscn",
+            Parameters = LevelVariationParameters.CreateHandcrafted("SignalTower", 22f, 3)
         },
         new LevelInfo
         {
             LevelIndex = 4,
             SectorCode = "SECTOR 05",
-            DisplayName = "Fractured Network",
-            NarrativeChapter = "Information Overload",
-            MechanicDescription = "Multi-chamber stabilization combining multiple mechanics",
-            DebriefText = "Core infrastructure stabilized. Recovered archive logs demonstrate that the network failure was deliberately orchestrated.",
+            DisplayName = "The Heartline",
+            NarrativeChapter = "The Last Signal",
+            MechanicDescription = "3-channel Echo coordination across Power, Archive, and Stabilizer cores",
+            DebriefText = "Heartline synchronized across all channels. All districts reconnected. The truth reaches everyone.",
             EfficientLoopThreshold = 3,
             OptionalFragmentId = "FRAG_SEC05_NETWORK_ARCHAEOLOGY",
             OptionalFragmentTitle = "Network Archaeology",
-            ScenePath = "res://Scenes/Levels/RemixStabilizationRoom.tscn",
-            Parameters = LevelRemixer.GenerateRemix("RemixStabilization", 42)
-        },
-        new LevelInfo
-        {
-            LevelIndex = 5,
-            SectorCode = "SECTOR 06",
-            DisplayName = "The Truth Protocol",
-            NarrativeChapter = "Evidence and Context",
-            MechanicDescription = "Verification terminal authentication and severed line repair",
-            DebriefText = "Archive integrity verified. Reconstructed evidence shows reports were taken from disparate events and presented as one crisis.",
-            EfficientLoopThreshold = 3,
-            OptionalFragmentId = "FRAG_SEC06_MISSING_WITNESS",
-            OptionalFragmentTitle = "The Missing Witness",
-            ScenePath = "res://Scenes/Levels/Sector06VerificationRoom.tscn",
-            Parameters = LevelVariationParameters.CreateHandcrafted("IntegrityBridge", 16f, 3)
-        },
-        new LevelInfo
-        {
-            LevelIndex = 6,
-            SectorCode = "SECTOR 07",
-            DisplayName = "Cascade Prevention",
-            NarrativeChapter = "Before the Breaking Point",
-            MechanicDescription = "Countdown containment and synchronized multi-station stabilization",
-            DebriefText = "Emergency broadcast cancelled. Original reports restored. Information cannot replace trust, but without information, trust cannot be rebuilt.",
-            EfficientLoopThreshold = 3,
-            OptionalFragmentId = "FRAG_SEC07_FINAL_TESTIMONY",
-            OptionalFragmentTitle = "Final Testimony",
-            ScenePath = "res://Scenes/Levels/Sector07PreventionRoom.tscn",
-            Parameters = LevelVariationParameters.CreateHandcrafted("EventPrevention", 15f, 3)
+            ScenePath = "res://Scenes/Levels/Sector05_Heartline.tscn",
+            Parameters = LevelVariationParameters.CreateHandcrafted("HeartlineCore", 24f, 3)
         }
     ];
 

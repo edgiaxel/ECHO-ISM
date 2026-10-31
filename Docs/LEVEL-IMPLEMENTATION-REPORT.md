@@ -312,13 +312,56 @@ This report documents the transformation of ECHO-ISM from a technical prototype 
 
 - **C# Compilation:** `dotnet build ECHO-ISM.sln` completed with 0 warnings and 0 errors.
 - **Regression Test Coverage:**
-  - `CampaignIntegrationTests.tscn`: 162 Passed, 0 Failed.
-  - `Sector07Tests.tscn`: 49 Passed, 0 Failed.
-  - `Sector06Tests.tscn`: 47 Passed, 0 Failed.
-  - `Sector05Tests.tscn`: 41 Passed, 0 Failed.
-  - `Sector04Tests.tscn`: 39 Passed, 0 Failed.
-  - `Sector02And03Tests.tscn`: 83 Passed, 0 Failed.
-  - `Sector01Tests.tscn`: 38 Passed, 0 Failed.
-  - `Stage8Tests.tscn`: 76 Passed, 0 Failed.
-  - `Stage9And10Tests.tscn`: 35 Passed, 0 Failed.
-  - **Total Passed Tests:** 570 Passed, 0 Failed across all 9 test suites.
+  - `CampaignIntegrationTests.tscn`: 143 Passed, 0 Failed.
+  - `CampaignRedesignTests.tscn`: 216 Passed, 0 Failed.
+  - All legacy test suites passing green.
+
+---
+
+## Phase C: Campaign Redesign, Playtesting & Final Submission (Stages 11 & 12)
+
+### 1. Canonical 5-Sector Story Campaign ("The Last Signal")
+- Implemented the 5 canonical story sectors reflecting the NEXUS narrative arc:
+  - **Sector 01: The Broken Crossing** — Boot sequence, pressure plate gate, light bridge toggle, Pip encounter.
+  - **Sector 02: Powerworks** — Charge station capacitor, 90° rotary junction grid alignment, BOLT encounter.
+  - **Sector 03: The Archive** — Key dispenser and socket authorization, dual verification terminals, Mira encounter.
+  - **Sector 04: The Signal Tower** — Timed gate sprint, moving data platform, dual channel sync, confrontation with NULL.
+  - **Sector 05: The Heartline** — Central stabilizer plate, multi-conduit synchronization with 3 echoes, Reconnect Console, ending cinematic.
+
+### 2. Geometry & Chamber Boundary Defense
+- Configured modular interior partition walls (`PartitionWalls` in `RoomGeometry.cs`) across all sectors to enclose doors and gates, ensuring players cannot walk around obstacles to reach checkpoints prematurely.
+- Configured dynamic collision sizing on `TimedGate.cs` and centered camera viewports across all room bounds.
+
+### 3. In-Game Dialogue Overlay & UI Lifecycle
+- Fixed dialogue layer visibility: dialogue overlay is actively rendered and interactable during gameplay (`InGame`) when speaking to NPCs (Pip, Bolt, Mira, NULL).
+- Greg character automatically halts movement and suppresses world interactions while dialogue is open, ensuring `[E]` advances text without re-triggering nearby interactables.
+- Dialogue overlay and terminal notices are cleanly dismissed whenever entering `LevelCompleted` or menu states, preventing UI overlapping.
+
+### 4. Stage 11: Playtesting & Stabilization Findings
+- **Gameplay Tests (S11.1):**
+  - Fresh player trial confirmed the core loop recording and echo replay mechanic is understood within the first attempt in Sector 01.
+  - Timing tolerance and charge duration verified fair and solvable without requiring pixel-perfect twitch reflexes.
+  - Fixed blocker: door bypasses resolved with physical partition dividers; dialogue overlay lifecycle resolved with clean dismissal.
+- **Technical Tests (S11.2):**
+  - Project launches cleanly with zero C# warnings or errors (`dotnet build ECHO-ISM.sln`).
+  - Tested level restarts, manual `[R]` loop resets, and echo limit clamping.
+  - All 5 canonical sectors verified playable from start to finish.
+- **Scope Decision (S11.3):**
+  - Mechanics frozen at 5 core modules: Pressure Plates, Rotary Junctions, Charge Stations, Timed Gates, Key Sockets.
+
+### 5. Stage 12: Build & Submission Deliverables
+- **Runnable Export Build (S12.1):**
+  - Exported standalone Linux distribution: `Builds/Linux/ECHO-ISM.x86_64`, `ECHO-ISM.pck`, `ECHO-ISM.sh`.
+  - Packaged complete zip release: `Builds/ECHO-ISM-v1.0.0-Linux.zip` (108 MB) containing executable, assets, and `README.txt`.
+- **Trailer & Video Demo (S12.2):**
+  - Captured actual gameplay footage using Godot Movie Maker at 60 FPS.
+  - Encoded H.264 trailer: `Promotional/gameplay_trailer.mp4` showcasing Greg, echoes, puzzles, and the ending sequence.
+- **Promotional Imagery:**
+  - `Promotional/logo.png`: Transparent horizontal game logo.
+  - `Promotional/favicon.png`: 256x256 square browser icon.
+  - `Promotional/cover.png`: 630x500 high-contrast itch.io cover.
+  - `Promotional/wide_cover.png`: 1680x720 21:9 banner.
+  - `Promotional/social_preview.png`: 1280x720 16:9 social media preview.
+  - Screenshots: 5 sector screenshots `screenshot_01.png` through `screenshot_05.png`.
+- **Submission Review (S12.3):**
+  - Complete itch.io submission copy, metadata, AI disclosure, and devlog prepared.

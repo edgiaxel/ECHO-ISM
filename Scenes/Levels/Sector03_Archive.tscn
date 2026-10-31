@@ -1,0 +1,89 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Levels/Sector03Archive.cs" id="1_sec03"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geom"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_cam"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/DataKeyDispenser.tscn" id="5_disp"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/KeySocket.tscn" id="6_sock"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="7_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/VerificationTerminal.tscn" id="8_term_v"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/NpcCharacter.tscn" id="9_npc"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="10_term"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="11_exit"]
+
+[node name="Sector03Archive" type="Node2D"]
+script = ExtResource("1_sec03")
+LevelId = "sector-03-archive"
+DisplayName = "The Archive"
+RoomBounds = Rect2(0, 0, 740, 400)
+StartingPosition = Vector2(60, 200)
+LoopDurationSeconds = 20.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Obtain the data key, unlock the vault, coordinate Echoes at both verification terminals, and meet Mira."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geom")
+Width = 740.0
+Height = 400.0
+RoomBounds = Rect2(0, 0, 740, 400)
+StartingPosition = Vector2(60, 200)
+PartitionWalls = [Rect2(232, 0, 16, 156), Rect2(232, 244, 16, 156), Rect2(412, 0, 16, 156), Rect2(412, 244, 16, 156)]
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(370, 200)
+enabled = true
+script = ExtResource("4_cam")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(60, 200)
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="KeyDispenser" parent="PuzzleModules" instance=ExtResource("5_disp")]
+position = Vector2(90, 90)
+StableId = "key-dispenser-archive"
+KeyId = "ARCHIVE_KEY_ALPHA"
+
+[node name="ArchiveSocket" parent="PuzzleModules" instance=ExtResource("6_sock")]
+position = Vector2(180, 200)
+StableId = "archive-socket-01"
+RequiredKeyId = "ARCHIVE_KEY_ALPHA"
+
+[node name="VaultDoor" parent="PuzzleModules" instance=ExtResource("7_door")]
+position = Vector2(240, 200)
+DoorSize = Vector2(16, 72)
+
+[node name="TerminalAlpha" parent="PuzzleModules" instance=ExtResource("8_term_v")]
+position = Vector2(320, 100)
+StableId = "verify-term-alpha"
+RequiredHoldTime = 1.0
+
+[node name="TerminalBeta" parent="PuzzleModules" instance=ExtResource("8_term_v")]
+position = Vector2(320, 300)
+StableId = "verify-term-beta"
+RequiredHoldTime = 1.0
+
+[node name="DeepArchiveGate" parent="PuzzleModules" instance=ExtResource("7_door")]
+position = Vector2(420, 200)
+DoorSize = Vector2(16, 72)
+
+[node name="MiraNpc" parent="PuzzleModules" instance=ExtResource("9_npc")]
+position = Vector2(520, 200)
+StableId = "npc-mira"
+CharacterType = 2
+CharacterName = "Mira"
+RoleTitle = "Archive Keeper"
+
+[node name="OriginalBroadcast" parent="PuzzleModules" instance=ExtResource("10_term")]
+position = Vector2(580, 100)
+StableId = "term-original-broadcast"
+TerminalTitle = "ORIGINAL NEXUS ARCHIVE RECORD"
+MessageHeader = "AUTHENTIC BROADCAST LOG"
+MessageBody = "CONFIRMED: The districts were never instructed to isolate. The emergency signal was forged by entity NULL."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC03_MEDIATOR_RECORD"
+FragmentTitle = "The Mediator's Record"
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("11_exit")]
+position = Vector2(670, 200)

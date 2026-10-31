@@ -21,8 +21,22 @@ public partial class LevelContainer : Node2D
     [Export(PropertyHint.Range, "1,120,1")]
     public float LoopDurationSeconds { get; set; } = 15;
 
+    [Export]
+    public float LoopDuration
+    {
+        get => LoopDurationSeconds;
+        set => LoopDurationSeconds = value;
+    }
+
     [Export(PropertyHint.Range, "0,3,1")]
     public int MaximumActiveEchoes { get; set; } = 3;
+
+    [Export]
+    public int MaxRecordedEchoes
+    {
+        get => MaximumActiveEchoes;
+        set => MaximumActiveEchoes = value;
+    }
 
     [Export(PropertyHint.MultilineText)]
     public string ObjectiveText { get; set; } = "Coordinate with Echo to open Door M02 and reach Exit Node.";
@@ -45,8 +59,41 @@ public partial class LevelContainer : Node2D
 
     public override void _Ready()
     {
-        GetNode<RoomGeometry>("RoomGeometry").SetRoomLayout(RoomBounds, StartingPosition);
-        GetNode<GregCharacter>("Greg").Position = StartingPosition;
+        var roomGeom = GetNodeOrNull<RoomGeometry>("RoomGeometry");
+        var greg = GetNodeOrNull<GregCharacter>("Greg");
+
+        if (roomGeom is not null)
+        {
+            if (roomGeom.Width > 0 && roomGeom.Height > 0)
+            {
+                if (RoomBounds == new Rect2(240, 166, 800, 400))
+                {
+                    RoomBounds = new Rect2(0, 0, roomGeom.Width, roomGeom.Height);
+                }
+            }
+            else if (RoomBounds != new Rect2(240, 166, 800, 400))
+            {
+                roomGeom.RoomBounds = RoomBounds;
+            }
+        }
+
+        if (greg is not null)
+        {
+            if (StartingPosition == new Vector2(360, 366) && greg.Position != Vector2.Zero && greg.Position != new Vector2(360, 366))
+            {
+                StartingPosition = greg.Position;
+            }
+            else
+            {
+                greg.Position = StartingPosition;
+            }
+        }
+
+        if (roomGeom is not null)
+        {
+            roomGeom.SetRoomLayout(RoomBounds, StartingPosition);
+        }
+
         _camera = GetNodeOrNull<RoomCamera>("RoomCamera");
 
         // Detect if level is run standalone (e.g. "Run Current Scene" / set as main scene in Godot editor)

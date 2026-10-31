@@ -105,14 +105,10 @@ public partial class Stage9And10Tests : Node2D
     {
         GD.Print("\n--- Testing S9.1: Environmental Storytelling ---");
 
-        var sec6Info = LevelRegistry.GetLevel(5); // Sector 06
-        var sec7Info = LevelRegistry.GetLevel(6); // Sector 07
+        var sec6Scene = GD.Load<PackedScene>("res://Scenes/Levels/Sector06VerificationRoom.tscn");
+        Assert(sec6Scene is not null, "Sector 06 verification scene exists");
+        if (sec6Scene is null) return;
 
-        Assert(sec6Info is not null && sec6Info.SectorCode == "SECTOR 06", "Sector 06 is registered in LevelRegistry");
-        Assert(sec7Info is not null && sec7Info.SectorCode == "SECTOR 07", "Sector 07 is registered in LevelRegistry");
-
-        // Verify Sector 06 scene instantiation
-        var sec6Scene = GD.Load<PackedScene>(sec6Info!.ScenePath);
         var sec6Node = sec6Scene.Instantiate<Node2D>();
         AddChild(sec6Node);
 
@@ -136,8 +132,10 @@ public partial class Stage9And10Tests : Node2D
     {
         GD.Print("\n--- Testing S9.2: Preventive Mechanics ---");
 
-        var sec7Info = LevelRegistry.GetLevel(6);
-        var sec7Scene = GD.Load<PackedScene>(sec7Info!.ScenePath);
+        var sec7Scene = GD.Load<PackedScene>("res://Scenes/Levels/Sector07PreventionRoom.tscn");
+        Assert(sec7Scene is not null, "Sector 07 prevention scene exists");
+        if (sec7Scene is null) return;
+
         var sec7Node = sec7Scene.Instantiate<Node2D>();
         AddChild(sec7Node);
 

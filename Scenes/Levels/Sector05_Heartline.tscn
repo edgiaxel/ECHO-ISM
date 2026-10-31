@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Levels/Sector05Heartline.cs" id="1_sec05"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geom"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_cam"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/ChargeStation.tscn" id="5_chg"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/RotaryJunction.tscn" id="6_rot"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/VerificationTerminal.tscn" id="7_vterm"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/PressurePlate.tscn" id="8_plate"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="9_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="10_term"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="11_exit"]
+
+[node name="Sector05Heartline" type="Node2D"]
+script = ExtResource("1_sec05")
+LevelId = "sector-05-heartline"
+DisplayName = "The Heartline"
+RoomBounds = Rect2(0, 0, 760, 440)
+StartingPosition = Vector2(60, 210)
+LoopDurationSeconds = 24.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Coordinate 3 Echoes across Power, Archive, and Stabilizer channels to re-engage the Heartline Core."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geom")
+Width = 760.0
+Height = 440.0
+RoomBounds = Rect2(0, 0, 760, 440)
+StartingPosition = Vector2(60, 210)
+PartitionWalls = [Rect2(432, 0, 16, 166), Rect2(432, 254, 16, 186)]
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(380, 220)
+enabled = true
+script = ExtResource("4_cam")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(60, 210)
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="PowerCapacitor" parent="PuzzleModules" instance=ExtResource("5_chg")]
+position = Vector2(120, 100)
+StableId = "heartline-power-capacitor"
+RequiredChargeDuration = 2.0
+
+[node name="PowerJunction" parent="PuzzleModules" instance=ExtResource("6_rot")]
+position = Vector2(220, 100)
+StableId = "heartline-power-junction"
+CurrentOrientation = 0
+TargetOrientation = 1
+RequiresPowerInput = true
+
+[node name="ArchiveVerifier" parent="PuzzleModules" instance=ExtResource("7_vterm")]
+position = Vector2(120, 320)
+StableId = "heartline-archive-verifier"
+RequiredHoldTime = 1.2
+
+[node name="CorePlate" parent="PuzzleModules" instance=ExtResource("8_plate")]
+position = Vector2(300, 210)
+ModuleId = "heartline-core-plate"
+
+[node name="CoreGate" parent="PuzzleModules" instance=ExtResource("9_door")]
+position = Vector2(440, 210)
+DoorSize = Vector2(16, 72)
+
+[node name="ReconnectConsole" parent="PuzzleModules" instance=ExtResource("10_term")]
+position = Vector2(560, 210)
+StableId = "heartline-reconnect-console"
+TerminalTitle = "CENTRAL HEARTLINE CONTROL"
+MessageHeader = "RESTORE ALL DISTRICTS"
+MessageBody = "Broadcast authenticated across all channels. Commencing NEXUS network reconnection. The truth reaches everyone."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC05_NETWORK_ARCHAEOLOGY"
+FragmentTitle = "Network Archaeology"
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("11_exit")]
+position = Vector2(680, 210)

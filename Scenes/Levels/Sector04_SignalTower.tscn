@@ -1,0 +1,91 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Levels/Sector04SignalTower.cs" id="1_sec04"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geom"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_cam"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TestSwitch.tscn" id="5_sw"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/TimedGate.tscn" id="6_tg"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/MovingObstacle.tscn" id="7_mov"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/SignalRelay.tscn" id="8_relay"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="9_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/NpcCharacter.tscn" id="10_npc"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="11_term"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="12_exit"]
+
+[node name="Sector04SignalTower" type="Node2D"]
+script = ExtResource("1_sec04")
+LevelId = "sector-04-signal-tower"
+DisplayName = "The Signal Tower"
+RoomBounds = Rect2(0, 0, 750, 420)
+StartingPosition = Vector2(60, 210)
+LoopDurationSeconds = 22.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Pulse the timed barrier, coordinate Echoes on both signal channels, and transmit the verified truth."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geom")
+Width = 750.0
+Height = 420.0
+RoomBounds = Rect2(0, 0, 750, 420)
+StartingPosition = Vector2(60, 210)
+PartitionWalls = [Rect2(172, 0, 16, 166), Rect2(172, 254, 16, 166), Rect2(442, 0, 16, 166), Rect2(442, 254, 16, 166)]
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(375, 210)
+enabled = true
+script = ExtResource("4_cam")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(60, 210)
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="GateTrigger" parent="PuzzleModules" instance=ExtResource("5_sw")]
+position = Vector2(80, 90)
+StableId = "gate-trigger-switch"
+
+[node name="TowerBarrier" parent="PuzzleModules" instance=ExtResource("6_tg")]
+position = Vector2(180, 210)
+StableId = "tower-barrier-01"
+OpenDuration = 4.0
+GateSize = Vector2(16, 88)
+
+[node name="MovingPlatform" parent="PuzzleModules" instance=ExtResource("7_mov")]
+position = Vector2(260, 210)
+EndOffset = Vector2(0, 100)
+CycleDuration = 3.0
+
+[node name="RelayChannel1" parent="PuzzleModules" instance=ExtResource("8_relay")]
+position = Vector2(360, 100)
+ModuleId = "relay-channel-1"
+RequiredEchoCount = 1
+
+[node name="RelayChannel2" parent="PuzzleModules" instance=ExtResource("8_relay")]
+position = Vector2(360, 310)
+ModuleId = "relay-channel-2"
+RequiredEchoCount = 1
+
+[node name="AntennaGate" parent="PuzzleModules" instance=ExtResource("9_door")]
+position = Vector2(450, 210)
+DoorSize = Vector2(16, 72)
+
+[node name="NullEntity" parent="PuzzleModules" instance=ExtResource("10_npc")]
+position = Vector2(540, 210)
+StableId = "npc-null"
+CharacterType = 3
+CharacterName = "NULL"
+RoleTitle = "Signal Intrusion"
+
+[node name="UplinkTerminal" parent="PuzzleModules" instance=ExtResource("11_term")]
+position = Vector2(600, 110)
+StableId = "term-tower-uplink"
+TerminalTitle = "CITYWIDE SIGNAL UPLINK"
+MessageHeader = "AUTHENTICATED PACKET BEAM"
+MessageBody = "Uplink verified. Broadcasting original archives to all districts. The isolation directive was false."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC04_ORIGINAL_SOURCE"
+FragmentTitle = "Original Source"
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("12_exit")]
+position = Vector2(680, 210)

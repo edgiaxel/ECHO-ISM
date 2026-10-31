@@ -54,6 +54,8 @@ public partial class GameManager : Node2D
     private LevelSelect _levelSelect = null!;
     private LevelCompletedModal _levelCompletedModal = null!;
     private PauseModal _pauseModal = null!;
+    private DialogueOverlay? _dialogueOverlay;
+    private EndingScreen? _endingScreen;
 
     private RoomCamera? _camera;
     private Door? _door;
@@ -90,6 +92,14 @@ public partial class GameManager : Node2D
         _levelSelect = GetNode<LevelSelect>("MenuLayer/LevelSelect");
         _levelCompletedModal = GetNode<LevelCompletedModal>("MenuLayer/LevelCompletedModal");
         _pauseModal = GetNode<PauseModal>("MenuLayer/PauseModal");
+        _dialogueOverlay = _menuLayer.GetNodeOrNull<DialogueOverlay>("DialogueOverlay");
+        _endingScreen = _menuLayer.GetNodeOrNull<EndingScreen>("EndingScreen");
+
+        if (_endingScreen is not null)
+        {
+            EndingScreen.ReplayCampaignRequested += () => LoadAndStartLevel(0);
+            EndingScreen.MainMenuRequested += () => SwitchState(GameFlowState.MainMenu);
+        }
 
         // Event bindings
         _mainMenu.PlayPressed += () => SwitchState(GameFlowState.LevelSelect);
@@ -147,6 +157,11 @@ public partial class GameManager : Node2D
         _levelCompletedModal.MouseFilter = showCompleted ? Control.MouseFilterEnum.Stop : Control.MouseFilterEnum.Ignore;
         _levelCompletedModal.ProcessMode = showCompleted ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
 
+        if (!showCompleted && _endingScreen is not null)
+        {
+            _endingScreen.Visible = false;
+        }
+
         if (showPaused)
         {
             _pauseModal.ShowModal();
@@ -166,7 +181,12 @@ public partial class GameManager : Node2D
             }
         }
 
-        _menuLayer.Visible = (showMainMenu || showLevelSelect || showCompleted || showPaused);
+        if (newState != GameFlowState.InGame)
+        {
+            _dialogueOverlay?.CloseDialogue();
+        }
+
+        _menuLayer.Visible = true;
         _basicHud.Visible = (inGame || showPaused || showCompleted);
 
         if (showMainMenu)
@@ -267,6 +287,9 @@ public partial class GameManager : Node2D
             return;
         }
 
+        _dialogueOverlay?.CloseDialogue();
+        DismissTerminalOverlay();
+
         _loopController.CompleteLevel();
         _camera?.Shake(5.0f, 0.4f);
 
@@ -280,6 +303,19 @@ public partial class GameManager : Node2D
         {
             bool hasNextSector = (CurrentLevelIndex + 1) < LevelRegistry.LevelCount;
             _levelCompletedModal.Display(info, attempts, timeTaken, hasNextSector);
+
+            if (!hasNextSector && _endingScreen is not null)
+            {
+                int totalLoops = 0;
+                float totalTime = 0f;
+                for (int i = 0; i < LevelRegistry.LevelCount; i++)
+                {
+                    var s = ProgressionManager.GetLevelStats(i);
+                    totalLoops += s.AttemptsTaken;
+                    totalTime += s.TimeTakenSeconds;
+                }
+                _endingScreen.ShowEnding(totalLoops, totalTime);
+            }
         }
 
         SwitchState(GameFlowState.LevelCompleted);
@@ -301,6 +337,11 @@ public partial class GameManager : Node2D
     private void UnloadCurrentLevel()
     {
         DismissTerminalOverlay();
+        _dialogueOverlay?.CloseDialogue();
+        if (_endingScreen is not null)
+        {
+            _endingScreen.Visible = false;
+        }
 
         if (_pauseModal is not null)
         {
@@ -429,6 +470,8 @@ public partial class GameManager : Node2D
 
     private void OnLoopReset()
     {
+        _dialogueOverlay?.CloseDialogue();
+        DismissTerminalOverlay();
         if (_level is not null)
         {
             _objective.Text = _level.ObjectiveText;

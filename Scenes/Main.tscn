@@ -1,12 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://cdx5drusgwpj0"]
+[gd_scene load_steps=10 format=3 uid="uid://cdx5drusgwpj0"]
 
 [ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_manager"]
-[ext_resource type="PackedScene" path="res://Scenes/Levels/TestRoom.tscn" id="2_level"]
+[ext_resource type="PackedScene" path="res://Scenes/Levels/Sector01_BrokenCrossing.tscn" id="2_level"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/BasicHud.tscn" id="3_hud"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/MainMenu.tscn" id="4_main_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/LevelSelect.tscn" id="5_level_select"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/LevelCompletedModal.tscn" id="6_level_completed"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PauseModal.tscn" id="7_pause_modal"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DialogueOverlay.tscn" id="8_dialogue"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/EndingScreen.tscn" id="9_ending"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_manager")
@@ -28,4 +30,10 @@ visible = false
 visible = false
 
 [node name="PauseModal" parent="MenuLayer" instance=ExtResource("7_pause_modal")]
+visible = false
+
+[node name="DialogueOverlay" parent="MenuLayer" instance=ExtResource("8_dialogue")]
+visible = false
+
+[node name="EndingScreen" parent="MenuLayer" instance=ExtResource("9_ending")]
 visible = false

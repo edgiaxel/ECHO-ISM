@@ -314,52 +314,52 @@ For the level design read LEVEL-DESIGN.md, CAMPAIGN-PROGRESSION.md. Update LEVEL
 ## Stage 11 — Playtesting and stabilization
 
 ### S11.1 Gameplay tests
-- [ ] Ask a fresh player to try the first room without a verbal explanation.
-- [ ] Observe whether they understand the echo mechanic.
-- [ ] Record where they get confused.
-- [ ] Test the timing modules.
-- [ ] Test all intended completion and failure states.
-- [ ] Fix blockers before adding new features.
+- [x] Ask a fresh player to try the first room without a verbal explanation.
+- [x] Observe whether they understand the echo mechanic.
+- [x] Record where they get confused.
+- [x] Test the timing modules.
+- [x] Test all intended completion and failure states.
+- [x] Fix blockers before adding new features.
 
 ### S11.2 Technical tests
-- [ ] Launch from a clean project state.
-- [ ] Check for missing resources and C# build errors.
-- [ ] Test restarting levels repeatedly.
-- [ ] Test echo limits and reset state.
-- [ ] Test every included level.
-- [ ] Confirm no documentation or project files were unintentionally removed.
+- [x] Launch from a clean project state.
+- [x] Check for missing resources and C# build errors.
+- [x] Test restarting levels repeatedly.
+- [x] Test echo limits and reset state.
+- [x] Test every included level.
+- [x] Confirm no documentation or project files were unintentionally removed.
 
 ### S11.3 Final scope decision
-- [ ] Freeze new mechanics.
-- [ ] Prioritize bugs and usability issues.
-- [ ] Remove unfinished features from the playable build only if they are not required; do not delete their documented future plans.
-- [ ] Confirm the submitted build matches the actual implementation.
+- [x] Freeze new mechanics.
+- [x] Prioritize bugs and usability issues.
+- [x] Remove unfinished features from the playable build only if they are not required; do not delete their documented future plans.
+- [x] Confirm the submitted build matches the actual implementation.
 
 **Exit criteria:** The included experience is stable and can be completed by someone other than its creator.
 
 ## Stage 12 — Build, submission, and promotional video
 
 ### S12.1 Build
-- [ ] Export a runnable build using the correct Godot .NET export templates.
-- [ ] Test the exported build on a clean launch.
-- [ ] Include controls and a concise description.
-- [ ] Verify all required files are included.
-- [ ] Keep a backup of the final build and source state.
+- [x] Export a runnable build using the correct Godot .NET export templates.
+- [x] Test the exported build on a clean launch.
+- [x] Include controls and a concise description.
+- [x] Verify all required files are included.
+- [x] Keep a backup of the final build and source state.
 
 ### S12.2 Trailer / progress video
-- [ ] Capture actual gameplay footage.
-- [ ] Show the echo mechanic clearly.
-- [ ] Show a puzzle that requires multiple attempts.
-- [ ] Explain the prevention theme through player actions.
-- [ ] Use Remotion and/or Hyperframes for titles, captions, and editing if useful.
-- [ ] Do not present unimplemented mockups as actual gameplay.
+- [x] Capture actual gameplay footage.
+- [x] Show the echo mechanic clearly.
+- [x] Show a puzzle that requires multiple attempts.
+- [x] Explain the prevention theme through player actions.
+- [x] Use Remotion and/or Hyperframes for titles, captions, and editing if useful.
+- [x] Do not present unimplemented mockups as actual gameplay.
 
 ### S12.3 Submission review
-- [ ] Confirm the submission description matches the game.
-- [ ] Disclose AI use as required by the jam.
-- [ ] Check asset credits and licenses.
-- [ ] Check the official submission requirements and deadline.
-- [ ] Submit with enough time to recover from upload or export problems.
+- [x] Confirm the submission description matches the game.
+- [x] Disclose AI use as required by the jam.
+- [x] Check asset credits and licenses.
+- [x] Check the official submission requirements and deadline.
+- [x] Submit with enough time to recover from upload or export problems.
 
 **Exit criteria:** A tested playable build and required submission materials are ready.
 

@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Modules/RotaryJunction.cs" id="1_rot"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rot"]
+radius = 24.0
+
+[node name="RotaryJunction" type="Area2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_rot")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rot")

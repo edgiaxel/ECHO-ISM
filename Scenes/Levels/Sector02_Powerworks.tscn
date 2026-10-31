@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Levels/Sector02Powerworks.cs" id="1_sec02"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geom"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_cam"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/ChargeStation.tscn" id="5_charge"]
+[ext_resource type="PackedScene" path="res://Scenes/PuzzleModules/RotaryJunction.tscn" id="6_rot"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="7_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="8_term"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/NpcCharacter.tscn" id="9_npc"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="10_exit"]
+
+[node name="Sector02Powerworks" type="Node2D"]
+script = ExtResource("1_sec02")
+LevelId = "sector-02-powerworks"
+DisplayName = "Powerworks"
+RoomBounds = Rect2(0, 0, 720, 380)
+StartingPosition = Vector2(60, 260)
+LoopDurationSeconds = 18.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Charge the capacitor with an Echo, align the rotary junction, and present evidence to BOLT."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geom")
+Width = 720.0
+Height = 380.0
+RoomBounds = Rect2(0, 0, 720, 380)
+StartingPosition = Vector2(60, 260)
+PartitionWalls = [Rect2(352, 0, 16, 156), Rect2(352, 244, 16, 136)]
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(360, 190)
+enabled = true
+script = ExtResource("4_cam")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(60, 260)
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="PowerCapacitor" parent="PuzzleModules" instance=ExtResource("5_charge")]
+position = Vector2(100, 260)
+StableId = "power-capacitor-01"
+RequiredChargeDuration = 2.0
+
+[node name="GridRouter" parent="PuzzleModules" instance=ExtResource("6_rot")]
+position = Vector2(260, 140)
+StableId = "grid-router-01"
+CurrentOrientation = 0
+TargetOrientation = 1
+RequiresPowerInput = true
+
+[node name="LiftGate" parent="PuzzleModules" instance=ExtResource("7_door")]
+position = Vector2(360, 200)
+DoorSize = Vector2(16, 72)
+
+[node name="EvidenceTerminal" parent="PuzzleModules" instance=ExtResource("8_term")]
+position = Vector2(460, 110)
+StableId = "evidence-terminal-02"
+TerminalTitle = "POWERWORKS TELEMETRY LOG"
+MessageHeader = "SPOOFED DISPATCH DETECTED"
+MessageBody = "ERROR: Command to disconnect District 3 power grid did not originate from city council. Origin signature: [NULL_INTRUSION_SIG]."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC02_SIGNAL_ANALYST"
+FragmentTitle = "Signal Analyst"
+
+[node name="BoltNpc" parent="PuzzleModules" instance=ExtResource("9_npc")]
+position = Vector2(540, 200)
+StableId = "npc-bolt"
+CharacterType = 1
+CharacterName = "BOLT"
+RoleTitle = "Power Station Chief"
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("10_exit")]
+position = Vector2(660, 200)

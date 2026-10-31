@@ -88,6 +88,14 @@ public partial class GregCharacter : CharacterBody2D
             return;
         }
 
+        if (DialogueOverlay.IsDialogueActive)
+        {
+            Velocity = Vector2.Zero;
+            _walkCycle = 0f;
+            QueueRedraw();
+            return;
+        }
+
         var direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
         Velocity = direction * MovementSpeed;
         if (!direction.IsZeroApprox())
