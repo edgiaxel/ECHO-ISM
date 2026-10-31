@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Tests/Stage8RemixTests.cs" id="1_stage8_tests"]
+
+[node name="Stage8Tests" type="Node2D"]
+script = ExtResource("1_stage8_tests")

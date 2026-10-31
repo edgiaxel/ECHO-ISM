@@ -1,0 +1,82 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/DualProtocolRoom.cs" id="1_dual_room"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_camera"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/PressurePlate.tscn" id="5_plate"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TestSwitch.tscn" id="6_switch"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/DualMechanismDoor.tscn" id="7_dual_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="8_goal"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="9_terminal"]
+
+[node name="DualProtocolRoom" type="Node2D"]
+script = ExtResource("1_dual_room")
+LevelId = "sector-03-dual-protocol"
+DisplayName = "Sector 03 - Divided Consensus"
+RoomBounds = Rect2(240, 166, 800, 400)
+StartingPosition = Vector2(360, 366)
+LoopDurationSeconds = 16.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Coordinate with an Echo to hold the West pressure plate while activating the East district switch."
+CompletionCondition = "Dual Door M02 unlocked; Exit Goal reached."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geometry")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(360, 366)
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(640, 366)
+enabled = true
+script = ExtResource("4_camera")
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="PressurePlate" parent="PuzzleModules" instance=ExtResource("5_plate")]
+position = Vector2(440, 280)
+
+[node name="TestSwitch" parent="PuzzleModules" instance=ExtResource("6_switch")]
+position = Vector2(440, 450)
+
+[node name="DualMechanismDoor" parent="PuzzleModules" instance=ExtResource("7_dual_door")]
+position = Vector2(640, 366)
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("8_goal")]
+position = Vector2(920, 366)
+
+[node name="WestTerminal" parent="PuzzleModules" instance=ExtResource("9_terminal")]
+position = Vector2(360, 260)
+StableId = "sec03-west-notice"
+TerminalTitle = "WEST DISTRICT DISPATCH"
+MessageHeader = "PUBLIC ANNOUNCEMENT"
+MessageBody = "EAST DISTRICT REFUSES DIALOGUE.
+All inter-district conduits are closed for community defense.
+Do not attempt contact."
+PromptText = "Read West District dispatch"
+
+[node name="EastTerminal" parent="PuzzleModules" instance=ExtResource("9_terminal")]
+position = Vector2(760, 470)
+StableId = "sec03-east-notice"
+TerminalTitle = "EAST DISTRICT DISPATCH"
+MessageHeader = "PUBLIC ANNOUNCEMENT"
+MessageBody = "WEST DISTRICT HAS SEVERED ALL TIES.
+Boundary walls reinforced.
+Remain within designated safe sectors."
+PromptText = "Read East District dispatch"
+
+[node name="MediatorTerminal" parent="PuzzleModules" instance=ExtResource("9_terminal")]
+position = Vector2(760, 260)
+StableId = "sec03-mediator-record"
+TerminalTitle = "ARCHIVED MEDIATION LOG"
+MessageHeader = "RECOVERED FRAGMENT [03/07]"
+MessageBody = "\"We used to share the same station. I found the original petition: both districts filed identical requests for joint council meetings on the very same day. Who changed the message?\""
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC03_MEDIATOR_RECORD"
+FragmentTitle = "The Mediator's Record"
+PromptText = "Recover mediator's log"
+
+[node name="ResettableState" type="Node2D" parent="."]
+
+[node name="PersistentState" type="Node2D" parent="."]

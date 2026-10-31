@@ -1,0 +1,86 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://Scripts/TimingRoom.cs" id="1_timing_room"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_camera"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TimingSlider.tscn" id="5_slider"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/PressurePlate.tscn" id="6_plate"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/SynchronizationGate.tscn" id="7_sync_gate"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TimedDoor.tscn" id="8_timed_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="9_goal"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="10_terminal"]
+
+[node name="TimingRoom" type="Node2D"]
+script = ExtResource("1_timing_room")
+LevelId = "sector-02-timing-room"
+DisplayName = "Sector 02 - False Synchrony"
+RoomBounds = Rect2(240, 166, 800, 400)
+StartingPosition = Vector2(360, 366)
+LoopDurationSeconds = 15.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Synchronize Channel A and Channel B within the tolerance window to unlock the timed security aperture."
+CompletionCondition = "Synchronize Gate M05 to unlock Timed Door and reach Exit Terminal."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geometry")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(360, 366)
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(640, 366)
+enabled = true
+script = ExtResource("4_camera")
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="TimingSlider" parent="PuzzleModules" instance=ExtResource("5_slider")]
+position = Vector2(440, 290)
+
+[node name="PressurePlate" parent="PuzzleModules" instance=ExtResource("6_plate")]
+position = Vector2(440, 450)
+
+[node name="SynchronizationGate" parent="PuzzleModules" instance=ExtResource("7_sync_gate")]
+position = Vector2(550, 366)
+
+[node name="TimedDoor" parent="PuzzleModules" instance=ExtResource("8_timed_door")]
+position = Vector2(640, 366)
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("9_goal")]
+position = Vector2(920, 366)
+
+[node name="ChannelATerminal" parent="PuzzleModules" instance=ExtResource("10_terminal")]
+position = Vector2(500, 250)
+StableId = "sec02-channel-a"
+TerminalTitle = "CHANNEL A BROADCAST"
+MessageHeader = "EMERGENCY ADVISORY [CH-A]"
+MessageBody = "CITIZENS REQUESTING EVACUATION.
+SECTOR OVERCROWDING IMMINENT.
+IMMEDIATE CONTAINMENT RECOMMENDED."
+PromptText = "Read Channel A broadcast"
+
+[node name="ChannelBTerminal" parent="PuzzleModules" instance=ExtResource("10_terminal")]
+position = Vector2(500, 490)
+StableId = "sec02-channel-b"
+TerminalTitle = "CHANNEL B BROADCAST"
+MessageHeader = "OFFICIAL DISPATCH [CH-B]"
+MessageBody = "NO EVACUATION REQUIRED.
+ALL SECTOR OPERATIONS STABLE.
+REPORTS OF CRISIS ARE UNFOUNDED."
+PromptText = "Read Channel B broadcast"
+
+[node name="SignalAnalystTerminal" parent="PuzzleModules" instance=ExtResource("10_terminal")]
+position = Vector2(760, 260)
+StableId = "sec02-signal-analyst"
+TerminalTitle = "ARCHIVED ANALYSIS LOG"
+MessageHeader = "RECOVERED FRAGMENT [02/07]"
+MessageBody = "\"I checked the arrival timestamps. Channel A and Channel B were recorded four hours apart. Someone is broadcasting them simultaneously to force panic.\""
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC02_SIGNAL_ANALYST"
+FragmentTitle = "Signal Analyst"
+PromptText = "Recover analyst log"
+
+[node name="ResettableState" type="Node2D" parent="."]
+
+[node name="PersistentState" type="Node2D" parent="."]

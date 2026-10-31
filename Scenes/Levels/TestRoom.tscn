@@ -1,15 +1,16 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
-[ext_resource type="Script" path="res://Scripts/LevelContainer.cs" id="1_level"]
+[ext_resource type="Script" path="res://Scripts/Sector01BootCircuit.cs" id="1_sector01"]
 [ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
 [ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
 [ext_resource type="PackedScene" path="res://Scenes/Modules/TestSwitch.tscn" id="4_switch"]
 [ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="5_camera"]
 [ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="6_door"]
 [ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="7_goal"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="8_terminal"]
 
 [node name="TestRoom" type="Node2D"]
-script = ExtResource("1_level")
+script = ExtResource("1_sector01")
 
 [node name="RoomGeometry" type="Node2D" parent="."]
 script = ExtResource("2_geometry")
@@ -32,6 +33,29 @@ position = Vector2(640, 366)
 
 [node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("7_goal")]
 position = Vector2(920, 366)
+
+[node name="PublicNoticeTerminal" parent="PuzzleModules" instance=ExtResource("8_terminal")]
+position = Vector2(560, 330)
+StableId = "sec01-public-notice"
+TerminalTitle = "PUBLIC NOTICE BROADCAST"
+MessageHeader = "SYSTEM ADVISORY #104"
+MessageBody = "SYSTEM STATUS: NORMAL
+CITIZEN REPORTS: CONFLICTING
+NETWORK INTEGRITY: 64%
+
+Please disregard all previous emergency warnings."
+PromptText = "Inspect public notice"
+
+[node name="LostTransmissionTerminal" parent="PuzzleModules" instance=ExtResource("8_terminal")]
+position = Vector2(360, 240)
+StableId = "sec01-lost-transmission"
+TerminalTitle = "ARCHIVED CITIZEN TRANSMISSION"
+MessageHeader = "RECOVERED FRAGMENT [01/07]"
+MessageBody = "\"...they told us everything was fine. But why did the warning system activate?\""
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC01_LOST_TRANSMISSION"
+FragmentTitle = "Lost Transmission"
+PromptText = "Recover lost transmission"
 
 [node name="ResettableState" type="Node2D" parent="."]
 

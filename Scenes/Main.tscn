@@ -1,8 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://cdx5drusgwpj0"]
+[gd_scene load_steps=8 format=3 uid="uid://cdx5drusgwpj0"]
 
 [ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_manager"]
 [ext_resource type="PackedScene" path="res://Scenes/Levels/TestRoom.tscn" id="2_level"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/BasicHud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/MainMenu.tscn" id="4_main_menu"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/LevelSelect.tscn" id="5_level_select"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/LevelCompletedModal.tscn" id="6_level_completed"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/PauseModal.tscn" id="7_pause_modal"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_manager")
@@ -11,3 +15,17 @@ InitialLevel = ExtResource("2_level")
 [node name="LevelHost" type="Node2D" parent="."]
 
 [node name="BasicHud" parent="." instance=ExtResource("3_hud")]
+
+[node name="MenuLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="MainMenu" parent="MenuLayer" instance=ExtResource("4_main_menu")]
+
+[node name="LevelSelect" parent="MenuLayer" instance=ExtResource("5_level_select")]
+visible = false
+
+[node name="LevelCompletedModal" parent="MenuLayer" instance=ExtResource("6_level_completed")]
+visible = false
+
+[node name="PauseModal" parent="MenuLayer" instance=ExtResource("7_pause_modal")]
+visible = false

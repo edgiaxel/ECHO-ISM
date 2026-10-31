@@ -1,0 +1,180 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/MainMenu.cs" id="1_main_menu"]
+[ext_resource type="Script" path="res://Scripts/UI/BackgroundBlobRunner.cs" id="2_bg_runner"]
+
+[sub_resource type="StyleBoxFlat" id="BtnNormal"]
+bg_color = Color(0.054902, 0.086275, 0.14902, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.254902, 0.333333, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="BtnHover"]
+bg_color = Color(0.08, 0.14, 0.24, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0, 0.823529, 1.0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="BtnPressed"]
+bg_color = Color(0.0, 0.823529, 1.0, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0, 0.823529, 1.0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="DebugBtnStyle"]
+bg_color = Color(0.054902, 0.086275, 0.14902, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.254902, 0.333333, 0.8)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main_menu")
+
+[node name="BackgroundRunner" type="Node2D" parent="."]
+script = ExtResource("2_bg_runner")
+
+[node name="MenuContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="MenuContainer"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="MenuContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.823529, 1.0, 1)
+theme_override_font_sizes/font_size = 46
+text = "ECHO-ISM"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="MenuContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.580392, 0.639216, 0.721569, 1)
+theme_override_font_sizes/font_size = 13
+text = "CHRONO-SPATIAL RECONSTRUCTION PROTOCOL"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="MenuContainer/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="MenuContainer/VBox"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+focus_neighbor_bottom = NodePath("../ExitButton")
+focus_next = NodePath("../ExitButton")
+theme_override_colors/font_color = Color(0.972549, 0.980392, 0.988235, 1)
+theme_override_colors/font_hover_color = Color(0.0, 0.823529, 1.0, 1)
+theme_override_colors/font_focus_color = Color(0.0, 0.823529, 1.0, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("BtnNormal")
+theme_override_styles/hover = SubResource("BtnHover")
+theme_override_styles/pressed = SubResource("BtnPressed")
+text = "START MISSION"
+
+[node name="ExitButton" type="Button" parent="MenuContainer/VBox"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+focus_neighbor_top = NodePath("../PlayButton")
+focus_previous = NodePath("../PlayButton")
+theme_override_colors/font_color = Color(0.7, 0.75, 0.82, 1)
+theme_override_colors/font_hover_color = Color(0.972549, 0.980392, 0.988235, 1)
+theme_override_colors/font_focus_color = Color(0.972549, 0.980392, 0.988235, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("BtnNormal")
+theme_override_styles/hover = SubResource("BtnHover")
+theme_override_styles/pressed = SubResource("BtnPressed")
+text = "DISCONNECT"
+
+[node name="BottomRight" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -60.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="UnlockAllButton" type="Button" parent="BottomRight"]
+custom_minimum_size = Vector2(190, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.580392, 0.639216, 0.721569, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("DebugBtnStyle")
+theme_override_styles/hover = SubResource("BtnHover")
+text = "[DEBUG] UNLOCK ALL: OFF"
+
+[node name="BottomLeft" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -48.0
+offset_right = 260.0
+grow_vertical = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VersionLabel" type="Label" parent="BottomLeft"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.38, 0.48, 1)
+theme_override_font_sizes/font_size = 11
+text = "ECHO-ISM v0.8.0 · STAGE 8 ARCHITECTURE"

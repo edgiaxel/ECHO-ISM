@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Modules/TimedDoor.cs" id="1_timed_door"]
+
+[sub_resource type="RectangleShape2D" id="TimedDoorCollision"]
+size = Vector2(20, 88)
+
+[node name="TimedDoor" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_timed_door")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("TimedDoorCollision")

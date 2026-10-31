@@ -1,0 +1,77 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/RemixStabilizationRoom.cs" id="1_remix_room"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_camera"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TimingSlider.tscn" id="5_slider"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/PressurePlate.tscn" id="6_plate"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/DualMechanismDoor.tscn" id="7_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="8_goal"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="9_terminal"]
+
+[node name="RemixStabilizationRoom" type="Node2D"]
+script = ExtResource("1_remix_room")
+LevelId = "sector-05-remix-stabilization"
+DisplayName = "Sector 05 - Fractured Network"
+RoomBounds = Rect2(240, 166, 800, 400)
+StartingPosition = Vector2(360, 366)
+LoopDurationSeconds = 16.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Synthesize multi-loop coordination: calibrate timing slider while locking pressure plate to bridge the fractured grid."
+CompletionCondition = "Stabilize parameters and reach final exit gateway."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geometry")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(360, 366)
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(640, 366)
+enabled = true
+script = ExtResource("4_camera")
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="TimingSlider" parent="PuzzleModules" instance=ExtResource("5_slider")]
+position = Vector2(440, 280)
+
+[node name="PressurePlate" parent="PuzzleModules" instance=ExtResource("6_plate")]
+position = Vector2(440, 450)
+
+[node name="DualMechanismDoor" parent="PuzzleModules" instance=ExtResource("7_door")]
+position = Vector2(640, 366)
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("8_goal")]
+position = Vector2(920, 366)
+
+[node name="PublicNoticeTerminal" parent="PuzzleModules" instance=ExtResource("9_terminal")]
+position = Vector2(360, 260)
+StableId = "sec05-fractured-bulletin"
+TerminalTitle = "NETWORK INTEGRITY CRITICAL"
+MessageHeader = "SYSTEM ADVISORY #505"
+MessageBody = "CROSS-SECTOR COMM-LINES SEVERED.
+Packet collisions detected across all gateways.
+Manual dual-station lock required to re-align data bus."
+PromptText = "Read system advisory"
+
+[node name="NetworkArchaeologyTerminal" parent="PuzzleModules" instance=ExtResource("9_terminal")]
+position = Vector2(780, 250)
+StableId = "sec05-network-archaeology"
+TerminalTitle = "ARCHIVED TIMELINE LOG"
+MessageHeader = "RECOVERED FRAGMENT [05/07]"
+MessageBody = "TIMELINE RECONSTRUCTION:
+[T-08:00] Synthetic channel latency injected.
+[T-04:00] Contradictory dispatches released.
+[T-01:00] Automated cross-district locks triggered.
+
+This was not a natural system collapse. It was a phased countdown to isolate us."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC05_NETWORK_ARCHAEOLOGY"
+FragmentTitle = "Network Archaeology"
+PromptText = "Recover archaeology timeline"
+
+[node name="ResettableState" type="Node2D" parent="."]
+
+[node name="PersistentState" type="Node2D" parent="."]

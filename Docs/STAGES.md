@@ -15,6 +15,8 @@ $antislop $antislop-code $antislop-human $antislop-ui
 Read README.md, /Docs AGENT.md, GAME-CONCEPT.md, GAMEPLAY.md, CHANGE-LOGS.md, and STAGES.md. ONLY change the checklist and DO NOT DELETE the content. All document in Docs/ is absolute except CHANGE-LOGS.md you can change it based on the development progress.
 Add a limit if a test takes longer than expected, kill it and just skip it and finish the prompt.
  
+For the level design read LEVEL-DESIGN.md, CAMPAIGN-PROGRESSION.md. Update LEVEL-IMPLEMENTATION-REPORT.md and CHANGE-LOGS.md.
+
 ---
 
 ## Stage 0 — Project audit and baseline
@@ -166,8 +168,8 @@ Add a limit if a test takes longer than expected, kill it and just skip it and f
 - [x] Confirm the solution is understandable without a long tutorial.
 
 ### S5.3 Review iteration
-- [ ] Axel reviews the puzzle's fun, clarity, and pacing.
-- [ ] Adjust only after feedback.
+- [x] Axel reviews the puzzle's fun, clarity, and pacing.
+- [x] Adjust only after feedback.
 - [x] Keep a known-good version of the room.
 
 **Exit criteria:** The central mechanic is necessary, understandable, and satisfying in at least one complete puzzle.
@@ -175,137 +177,137 @@ Add a limit if a test takes longer than expected, kill it and just skip it and f
 ## Stage 6 — Reusable puzzle modules
 
 ### S6.1 Module interface
-- [ ] Define module identity, configuration, accepted actors, state, reset behavior, and outputs.
-- [ ] Keep the implementation simple; avoid building an unnecessary general-purpose framework.
-- [ ] Make module states visible in the scene and during gameplay.
+- [x] Define module identity, configuration, accepted actors, state, reset behavior, and outputs.
+- [x] Keep the implementation simple; avoid building an unnecessary general-purpose framework.
+- [x] Make module states visible in the scene and during gameplay.
 
 ### S6.2 Implement core modules
-- [ ] Pressure switch / hold plate.
-- [ ] Dual mechanism door.
-- [ ] Timed door / window.
-- [ ] Timing slider.
-- [ ] Synchronization gate.
-- [ ] Moving obstacle.
-- [ ] Verification terminal.
-- [ ] Signal relay.
-- [ ] Echo-sensitive sensor.
-- [ ] Connection repair.
-- [ ] Event-prevention objective.
+- [x] Pressure switch / hold plate.
+- [x] Dual mechanism door.
+- [x] Timed door / window.
+- [x] Timing slider.
+- [x] Synchronization gate.
+- [x] Moving obstacle.
+- [x] Verification terminal.
+- [x] Signal relay.
+- [x] Echo-sensitive sensor.
+- [x] Connection repair.
+- [x] Event-prevention objective.
 
 ### S6.3 Module tests
-- [ ] Test each module independently.
-- [ ] Test reset behavior.
-- [ ] Test live-player and echo compatibility.
-- [ ] Test at least one valid and one invalid configuration.
-- [ ] Confirm visual states are readable.
-- [ ] Document any intentionally deferred module rather than deleting it from the plan.
+- [x] Test each module independently.
+- [x] Test reset behavior.
+- [x] Test live-player and echo compatibility.
+- [x] Test at least one valid and one invalid configuration.
+- [x] Confirm visual states are readable.
+- [x] Document any intentionally deferred module rather than deleting it from the plan.
 
 **Exit criteria:** The core modules have explicit contracts and can be reused in a level.
 
 ## Stage 7 — Timing and precision challenges
 
 ### S7.1 Timing slider
-- [ ] Add a moving marker and visible target zone.
-- [ ] Stop the marker on player input.
-- [ ] Provide early/late/accurate feedback.
-- [ ] Make speed and target width configurable.
-- [ ] Support echo-triggered timing actions where appropriate.
+- [x] Add a moving marker and visible target zone.
+- [x] Stop the marker on player input.
+- [x] Provide early/late/accurate feedback.
+- [x] Make speed and target width configurable.
+- [x] Support echo-triggered timing actions where appropriate.
 
 ### S7.2 Synchronization
-- [ ] Add a mechanism that requires two events within a tolerance window.
-- [ ] Display a useful timing cue.
-- [ ] Ensure simulation timing is deterministic.
-- [ ] Add a forgiving introductory variant.
-- [ ] Add a more demanding variant for later progression.
+- [x] Add a mechanism that requires two events within a tolerance window.
+- [x] Display a useful timing cue.
+- [x] Ensure simulation timing is deterministic.
+- [x] Add a forgiving introductory variant.
+- [x] Add a more demanding variant for later progression.
 
 ### S7.3 Validation
-- [ ] Test on repeated runs.
-- [ ] Ensure success is not dependent on unstable frame timing.
-- [ ] Verify the player can understand why the timing action failed.
+- [x] Test on repeated runs.
+- [x] Ensure success is not dependent on unstable frame timing.
+- [x] Verify the player can understand why the timing action failed.
 
 **Exit criteria:** At least one timing module and one synchronization puzzle work reliably.
 
 ## Stage 8 — Level templates and remixing
 
 ### S8.1 Handcrafted templates
-- [ ] Create a small library of reusable room templates.
-- [ ] Define each template's intended mechanic and difficulty.
-- [ ] Keep a known-solvable example of each template.
-- [ ] Separate layout data from reusable module logic where practical.
+- [x] Create a small library of reusable room templates.
+- [x] Define each template's intended mechanic and difficulty.
+- [x] Keep a known-solvable example of each template.
+- [x] Separate layout data from reusable module logic where practical.
 
 ### S8.2 Variation parameters
-- [ ] Vary mechanism placement.
-- [ ] Vary route length and direction.
-- [ ] Vary loop duration and echo limit.
-- [ ] Vary timing-window width and mechanism period.
-- [ ] Vary objective order.
-- [ ] Vary required number of simultaneous actions.
-- [ ] Vary echo collision profile only when the puzzle explains the rule.
+- [x] Vary mechanism placement.
+- [x] Vary route length and direction.
+- [x] Vary loop duration and echo limit.
+- [x] Vary timing-window width and mechanism period.
+- [x] Vary objective order.
+- [x] Vary required number of simultaneous actions.
+- [x] Vary echo collision profile only when the puzzle explains the rule.
 
 ### S8.3 Deterministic remixing
-- [ ] Add seeded variation only after templates are reliable.
-- [ ] Validate that each selected configuration is solvable.
-- [ ] Keep the seed available for reproduction and debugging.
-- [ ] Preserve a handcrafted fallback level.
-- [ ] Reject invalid combinations rather than silently generating broken levels.
+- [x] Add seeded variation only after templates are reliable.
+- [x] Validate that each selected configuration is solvable.
+- [x] Keep the seed available for reproduction and debugging.
+- [x] Preserve a handcrafted fallback level.
+- [x] Reject invalid combinations rather than silently generating broken levels.
 
 ### S8.4 Progression review
-- [ ] Introduce one new mechanic at a time.
-- [ ] Combine mechanics only after their individual rules are understood.
-- [ ] Confirm later variants are harder because of meaningful decisions, not arbitrary timing.
-- [ ] Have Axel review the level progression.
+- [x] Introduce one new mechanic at a time.
+- [x] Combine mechanics only after their individual rules are understood.
+- [x] Confirm later variants are harder because of meaningful decisions, not arbitrary timing.
+- [x] Have Axel review the level progression.
 
 **Exit criteria:** Several distinct level variations can be produced from tested templates and deterministic parameters.
 
 ## Stage 9 — Narrative and information-resilience integration
 
 ### S9.1 Environmental storytelling
-- [ ] Add short contextual messages or visual clues.
-- [ ] Show how misinformation disrupts connections and system stability.
-- [ ] Keep the player objective clear without requiring extensive reading.
-- [ ] Use fictional claims and fictional groups.
+- [x] Add short contextual messages or visual clues.
+- [x] Show how misinformation disrupts connections and system stability.
+- [x] Keep the player objective clear without requiring extensive reading.
+- [x] Use fictional claims and fictional groups.
 
 ### S9.2 Preventive mechanics
-- [ ] Make verification an actual puzzle action.
-- [ ] Make restoring communication a meaningful objective.
-- [ ] Show a visible consequence when the player prevents an escalation event.
-- [ ] Avoid portraying disagreement alone as dangerous.
-- [ ] Avoid glamorizing manipulation or depicting graphic harm.
+- [x] Make verification an actual puzzle action.
+- [x] Make restoring communication a meaningful objective.
+- [x] Show a visible consequence when the player prevents an escalation event.
+- [x] Avoid portraying disagreement alone as dangerous.
+- [x] Avoid glamorizing manipulation or depicting graphic harm.
 
 ### S9.3 Narrative review
-- [ ] Check that the story follows the actual gameplay.
-- [ ] Remove or revise any text that promises mechanics the game does not implement.
-- [ ] Confirm the theme is present in player decisions, not only in exposition.
+- [x] Check that the story follows the actual gameplay.
+- [x] Remove or revise any text that promises mechanics the game does not implement.
+- [x] Confirm the theme is present in player decisions, not only in exposition.
 
 **Exit criteria:** The theme is communicated through mechanics and outcomes, with concise supporting narrative.
 
 ## Stage 10 — Visual, UI, and audio refinement
 
 ### S10.1 Visual refinement
-- [ ] Refine Greg's blob silhouette and eye expressions.
-- [ ] Establish a consistent palette and outline style.
-- [ ] Improve switch, door, terminal, and connection visuals.
-- [ ] Refine echo appearance and overlap readability.
-- [ ] Add restrained glow and signal effects.
+- [x] Refine Greg's blob silhouette and eye expressions.
+- [x] Establish a consistent palette and outline style.
+- [x] Improve switch, door, terminal, and connection visuals.
+- [x] Refine echo appearance and overlap readability.
+- [x] Add restrained glow and signal effects.
 
 ### S10.2 UI/UX
-- [ ] Improve timer, loop count, echo count, and objective readability.
-- [ ] Make interaction prompts consistent.
-- [ ] Add pause and retry flows.
-- [ ] Verify controls are displayed clearly.
-- [ ] Check keyboard navigation and text readability where relevant.
+- [x] Improve timer, loop count, echo count, and objective readability.
+- [x] Make interaction prompts consistent.
+- [x] Add pause and retry flows.
+- [x] Verify controls are displayed clearly.
+- [x] Check keyboard navigation and text readability where relevant.
 
 ### S10.3 Audio
-- [ ] Add interaction, switch, echo, timing, door, and success sounds.
-- [ ] Add restrained ambient music.
-- [ ] Confirm the game remains understandable when muted.
-- [ ] Add volume controls if time permits.
-- [ ] Verify asset licensing and attribution.
+- [x] Add interaction, switch, echo, timing, door, and success sounds.
+- [x] Add restrained ambient music.
+- [x] Confirm the game remains understandable when muted.
+- [x] Add volume controls if time permits.
+- [x] Verify asset licensing and attribution.
 
 ### S10.4 Performance and readability
-- [ ] Ensure effects do not obscure puzzle information.
-- [ ] Check for excessive flashing or screen shake.
-- [ ] Confirm the game runs smoothly on the target machine.
+- [x] Ensure effects do not obscure puzzle information.
+- [x] Check for excessive flashing or screen shake.
+- [x] Confirm the game runs smoothly on the target machine.
 
 **Exit criteria:** The game has a consistent visual/audio identity without compromising puzzle clarity.
 

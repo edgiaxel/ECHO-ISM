@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Modules/EchoSensor.cs" id="1_echo_sensor"]
+
+[sub_resource type="CircleShape2D" id="SensorArea"]
+radius = 28.0
+
+[node name="EchoSensor" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1_echo_sensor")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("SensorArea")

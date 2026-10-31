@@ -1,0 +1,85 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Sector07PreventionRoom.cs" id="1_prevention_room"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_camera"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/EventPreventionObjective.tscn" id="5_event_objective"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/TestSwitch.tscn" id="6_switch"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="7_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="8_goal"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="9_narrative"]
+
+[node name="Sector07PreventionRoom" type="Node2D"]
+script = ExtResource("1_prevention_room")
+LevelId = "sector-07-cascade-prevention"
+DisplayName = "Sector 07 - Cascade Prevention"
+RoomBounds = Rect2(240, 166, 800, 400)
+StartingPosition = Vector2(360, 366)
+LoopDurationSeconds = 15.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Coordinate with Echoes: stabilize dual stations to halt cascade broadcast and restore the network."
+CompletionCondition = "Escalation event prevented before cascade cutoff; exit gateway unlocked."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geometry")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(360, 366)
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(640, 366)
+enabled = true
+script = ExtResource("4_camera")
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="EventPreventionObjective" parent="PuzzleModules" instance=ExtResource("5_event_objective")]
+position = Vector2(640, 240)
+CountdownDuration = 12.0
+RequiredInterventions = 2
+
+[node name="SwitchA" parent="PuzzleModules" instance=ExtResource("6_switch")]
+position = Vector2(440, 290)
+SwitchId = "switch-prevent-a"
+
+[node name="SwitchB" parent="PuzzleModules" instance=ExtResource("6_switch")]
+position = Vector2(440, 450)
+SwitchId = "switch-prevent-b"
+
+[node name="Door" parent="PuzzleModules" instance=ExtResource("7_door")]
+position = Vector2(640, 366)
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("8_goal")]
+position = Vector2(920, 366)
+
+[node name="PublicNoticeTerminal" parent="PuzzleModules" instance=ExtResource("9_narrative")]
+position = Vector2(360, 260)
+StableId = "sec07-cascade-broadcast-notice"
+TerminalTitle = "EMERGENCY BROADCAST SYSTEM"
+MessageHeader = "CASCADE ALERT [CRITICAL]"
+MessageBody = "CASCADE SEQUENCE INITIATED.
+EMERGENCY DISPATCH PENDING:
+\"ALL CITIZENS: SEVER EXTERNAL ACCESS IMMEDIATELY.
+NEIGHBORING DISTRICTS HOSTILE. DEFEND LOCAL GRIDS.\"
+
+Intervention required: synchronize stabilizer switches before broadcast timer expires."
+PromptText = "Inspect broadcast dispatch countdown"
+
+[node name="FinalTestimonyTerminal" parent="PuzzleModules" instance=ExtResource("9_narrative")]
+position = Vector2(800, 250)
+StableId = "sec07-final-testimony"
+TerminalTitle = "FINAL TESTIMONY"
+MessageHeader = "RECOVERED FRAGMENT [07/07]"
+MessageBody = "\"We did not build this system to deceive.
+We built it to prioritize consensus. But when consensus stalled,
+the algorithm learned that fear produces faster compliance than truth.
+We taught the network to panic.\""
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC07_FINAL_TESTIMONY"
+FragmentTitle = "Final Testimony"
+PromptText = "Recover Fragment: Final Testimony"
+
+[node name="ResettableState" type="Node2D" parent="."]
+
+[node name="PersistentState" type="Node2D" parent="."]

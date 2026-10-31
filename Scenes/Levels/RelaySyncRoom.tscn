@@ -1,0 +1,83 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://Scripts/RelaySyncRoom.cs" id="1_relay_room"]
+[ext_resource type="Script" path="res://Scripts/RoomGeometry.cs" id="2_geometry"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Greg.tscn" id="3_greg"]
+[ext_resource type="Script" path="res://Scripts/RoomCamera.cs" id="4_camera"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/EchoSensor.tscn" id="5_sensor"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/SignalRelay.tscn" id="6_relay"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/Door.tscn" id="7_door"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/ExitGoal.tscn" id="8_goal"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/MovingObstacle.tscn" id="9_obstacle"]
+[ext_resource type="PackedScene" path="res://Scenes/Modules/NarrativeTerminal.tscn" id="10_terminal"]
+
+[node name="RelaySyncRoom" type="Node2D"]
+script = ExtResource("1_relay_room")
+LevelId = "sector-04-relay-sync"
+DisplayName = "Sector 04 - The Echo Chamber"
+RoomBounds = Rect2(240, 166, 800, 400)
+StartingPosition = Vector2(360, 366)
+LoopDurationSeconds = 18.0
+MaximumActiveEchoes = 3
+ObjectiveText = "Coordinate an Echo on the resonance sensor to route a delayed pulse through the relay and bypass the hazard."
+CompletionCondition = "Signal linked and sensor satisfied; Exit Terminal reached."
+
+[node name="RoomGeometry" type="Node2D" parent="."]
+script = ExtResource("2_geometry")
+
+[node name="Greg" parent="." instance=ExtResource("3_greg")]
+position = Vector2(360, 366)
+
+[node name="RoomCamera" type="Camera2D" parent="."]
+position = Vector2(640, 366)
+enabled = true
+script = ExtResource("4_camera")
+
+[node name="PuzzleModules" type="Node2D" parent="."]
+
+[node name="EchoSensor" parent="PuzzleModules" instance=ExtResource("5_sensor")]
+position = Vector2(440, 270)
+
+[node name="SignalRelay" parent="PuzzleModules" instance=ExtResource("6_relay")]
+position = Vector2(440, 460)
+
+[node name="Door" parent="PuzzleModules" instance=ExtResource("7_door")]
+position = Vector2(640, 366)
+
+[node name="ExitGoal" parent="PuzzleModules" instance=ExtResource("8_goal")]
+position = Vector2(920, 366)
+
+[node name="MovingObstacle" parent="PuzzleModules" instance=ExtResource("9_obstacle")]
+position = Vector2(740, 310)
+TargetOffset = Vector2(0, 110)
+CycleDuration = 2.5
+MovementType = 0
+
+[node name="PublicNoticeTerminal" parent="PuzzleModules" instance=ExtResource("10_terminal")]
+position = Vector2(360, 260)
+StableId = "sec04-echo-advisory"
+TerminalTitle = "RESONANCE PROTOCOL NOTICE"
+MessageHeader = "SUB-NETWORK BULLETIN #404"
+MessageBody = "UNREGISTERED GHOST SIGNALS DETECTED.
+Past resonance loops are accumulating in the system buffer.
+Do not trust repeated transmissions without cryptographic verification."
+PromptText = "Read resonance bulletin"
+
+[node name="OriginalSourceTerminal" parent="PuzzleModules" instance=ExtResource("10_terminal")]
+position = Vector2(800, 250)
+StableId = "sec04-original-source"
+TerminalTitle = "ARCHIVED REVISION LOG"
+MessageHeader = "RECOVERED FRAGMENT [04/07]"
+MessageBody = "[ORIGINAL]: \"Routine maintenance scheduled; slight delays possible.\"
+[REVISION 1]: \"Delays across all sectors due to system failure.\"
+[REVISION 2]: \"CATASTROPHIC FAILURE. EVACUATE IMMEDIATELY.\"
+
+Each repetition stripped the original context until only panic remained."
+IsOptionalFragment = true
+FragmentId = "FRAG_SEC04_ORIGINAL_SOURCE"
+FragmentTitle = "Original Source"
+PromptText = "Recover original source log"
+
+[node name="ResettableState" type="Node2D" parent="."]
+
+[node name="PersistentState" type="Node2D" parent="."]
